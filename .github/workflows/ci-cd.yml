@@ -1,0 +1,151 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "master" ]
+    tags: [ "*.*.*" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  rust-checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "rust"
+      - name: Check Formatting
+        working-directory: rust
+        run: cargo fmt --all -- --check
+      - name: Clippy Linter
+        working-directory: rust
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Unit Tests
+        working-directory: rust
+        run: cargo test --workspace
+      - name: Security Audit (cargo-audit)
+        uses: rustsec/audit-check@v1.4.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  flutter-checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - name: Install Dependencies
+        working-directory: app/flutter
+        run: flutter pub get
+      - name: Analyze
+        working-directory: app/flutter
+        run: flutter analyze
+      - name: Test
+        working-directory: app/flutter
+        run: flutter test
+
+  frb-codegen-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+      - name: Install flutter_rust_bridge_codegen
+        run: cargo install flutter_rust_bridge_codegen --version 2.13.0
+      - name: Generate FRB Bindings
+        working-directory: app/flutter
+        run: flutter_rust_bridge_codegen generate
+      - name: Check for Uncommitted Changes
+        run: git diff --exit-code
+
+  build-and-release:
+    needs: [rust-checks, flutter-checks, frb-codegen-check]
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        target: [linux, android]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check Selective Release (Tag Suffix)
+        id: filter
+        run: |
+          BUILD_TARGET="${{ matrix.target }}"
+          SHOULD_BUILD="true"
+          
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+            if [[ "$TAG_NAME" == *-a ]] && [[ "$BUILD_TARGET" != "android" ]]; then
+              SHOULD_BUILD="false"
+            elif [[ "$TAG_NAME" == *-l ]] && [[ "$BUILD_TARGET" != "linux" ]]; then
+              SHOULD_BUILD="false"
+            fi
+          fi
+          
+          echo "should_build=$SHOULD_BUILD" >> $GITHUB_OUTPUT
+      
+      - name: Install Linux Dependencies
+        if: steps.filter.outputs.should_build == 'true' && matrix.target == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev ninja-build pkg-config cmake build-essential
+      
+      - name: Install Flutter
+        if: steps.filter.outputs.should_build == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      
+      - name: Install Rust & NDK Targets
+        if: steps.filter.outputs.should_build == 'true'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: "aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android,i686-linux-android"
+          
+      - name: Build Linux
+        if: steps.filter.outputs.should_build == 'true' && matrix.target == 'linux'
+        working-directory: app/flutter
+        run: flutter build linux --release
+        
+      - name: Compress Linux Build
+        if: steps.filter.outputs.should_build == 'true' && matrix.target == 'linux'
+        working-directory: app/flutter/build/linux/x64/release/bundle
+        run: tar -czvf "$GITHUB_WORKSPACE/qi_flutter_linux.tar.gz" *
+        
+      - name: Build Android
+        if: steps.filter.outputs.should_build == 'true' && matrix.target == 'android'
+        working-directory: app/flutter
+        run: flutter build apk --release
+        
+      - name: Move Android Build
+        if: steps.filter.outputs.should_build == 'true' && matrix.target == 'android'
+        working-directory: app/flutter
+        run: mv build/app/outputs/flutter-apk/app-release.apk ../../qi_flutter_android.apk
+
+      - name: Release to GitHub
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') && steps.filter.outputs.should_build == 'true'
+        with:
+          files: |
+            qi_flutter_linux.tar.gz
+            qi_flutter_android.apk
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
