@@ -1,0 +1,11 @@
+[package]
+name = "rust_lib_qi_flutter"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+qi_core = { path = "../qi_core" }
+flutter_rust_bridge = "=2.13.0"
