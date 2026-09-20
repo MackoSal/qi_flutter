@@ -83,3 +83,9 @@ You can use VS Code's built-in run/debug tools (F5) by selecting your device in 
 
 *Note: The very first time you build for a new target (especially Android or iOS), the build process will take several minutes. This is because Cargokit must download the appropriate cross-compilation toolchains (`rustup target add...`) and compile the entire Rust logic layer from scratch.*
 
+
+---
+
+## 4. AI Tools
+
+See [AI_TOOLS_HELPERS.md](AI_TOOLS_HELPERS.md) for the complete English and Polish reference of all AI roles and skills, including portable invocation examples for Gemini, GitHub Copilot, and Claude Code.
