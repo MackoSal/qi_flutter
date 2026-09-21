@@ -1,8 +1,9 @@
-# qiWELLNESS (Flutter + Rust)
+# Flutter + Rust Native Template
 
-This repository contains the modern rewrite of the **qiWELLNESS** desktop application, transitioning from the legacy Lazarus/Free Pascal codebase to a high-performance **Flutter** (UI) and **Rust** (Logic) stack.
+This repository is a universal, high-performance template for building native **Flutter** (UI) and **Rust** (Logic) applications. 
+It uses a modular workspace pattern connected via `flutter_rust_bridge` and `cargokit`.
 
-The application communicates directly with bioresonance/electroacupuncture hardware devices (via serial/USB ports). Due to the hardware requirements, **the Web platform is explicitly not supported**. This is a 100% native application for Desktop (Windows/Linux/macOS) and Mobile (Android/iOS).
+Due to the native multi-threading and architecture requirements, **the Web platform is explicitly not supported**. This is a 100% native application template for Desktop (Windows/Linux/macOS) and Mobile (Android/iOS).
 
 ---
 
@@ -33,14 +34,16 @@ qi_flutter/
 ├── app/
 │   └── flutter/                  # The main Flutter Application (Presentation Layer)
 │       ├── lib/                  # Dart UI code and state management
-│       ├── android/, ios/, etc.  # Native runner projects
+│       ├── integration_test/     # Native E2E tests (Patrol)
 │       └── rust_builder/         # Cargokit plugin linking the Rust workspace to Flutter
 ├── rust/                         # The Rust Workspace (Logic Layer)
 │   ├── Cargo.toml                # Workspace manifest
 │   └── crates/
 │       ├── qi_core/              # Pure Rust business logic, hardware comms (serialport), math. (Zero Flutter knowledge)
 │       └── rust_lib_qi_flutter/  # FFI Bridge crate. Exposes `qi_core` to Dart via flutter_rust_bridge.
-├── qiWELLNESS/                   # Legacy Lazarus/Pascal reference codebase (Ignored by Git)
+├── design/                       # UI/UX design tokens and Penpot/Figma integration rules
+├── scripts/                      # Utility scripts (e.g. rename_project.py)
+├── testing/                      # Test runner configurations and documentation
 ├── AGENTS.md                     # AI System Knowledge Base, Milestones & Migration Rules
 └── README.md                     # This file
 ```

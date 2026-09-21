@@ -4,13 +4,13 @@ This document is the single source of truth for current and future AI agents and
 
 ## 1. Project Goal
 
-Migrate the **qiWELLNESS** desktop application from Lazarus/Free Pascal to a modern **Flutter (UI) + Rust (logic)** stack.
+Migrate the **FlutterRustApp** desktop application from Lazarus/Free Pascal to a modern **Flutter (UI) + Rust (logic)** stack.
 
 The application is a control panel for a bioresonance/electroacupuncture device. It currently communicates over a serial port, with a future migration to native USB or BLE planned.
 
 ## 2. Legacy System Analysis (Pascal)
 
-The legacy code is located in the `qiWELLNESS/` directory and excluded from Git tracking by `.gitignore`.
+The legacy code is located in the `FlutterRustApp/` directory and excluded from Git tracking by `.gitignore`.
 
 Primary application domains:
 
@@ -21,7 +21,7 @@ Primary application domains:
 
 ## 3. Target Architecture (Multi-crate Workspace)
 
-Use a modular Rust Workspace pattern inspired by `crispy-tivi`, with one important constraint: **do not support the Web platform and do not use a WebSocket server architecture**.
+Use a modular Rust Workspace pattern inspired by `the reference architecture`, with one important constraint: **do not support the Web platform and do not use a WebSocket server architecture**.
 
 The application is fully native. All substantial logic, including mathematics, machine state, and direct port communication, resides in Rust, isolated from the UI and connected only through in-memory FFI.
 
