@@ -1,0 +1,12 @@
+--- README.md
++++ README.md
+@@ -79,6 +79,13 @@
+     flutter run -d macos
+     ```
+ 
++> **Note on Android Compilation:** This template uses Android Gradle Plugin (AGP) 8.11 with forward-compatibility flags enabled (`android.newDsl=false`) to ensure stable compilation while the Flutter ecosystem migrates to AGP 9.0+. 
++> For instructions on how to finalize the migration to AGP 9.0+ and built-in Kotlin in the future, please read [`app/flutter/ANDROID_AGP9_MIGRATION.md`](app/flutter/ANDROID_AGP9_MIGRATION.md).
++
+ ## Architecture Constraints
+ 
+ As per [AGENTS.md](AGENTS.md):

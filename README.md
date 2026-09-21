@@ -86,6 +86,8 @@ You can use VS Code's built-in run/debug tools (F5) by selecting your device in 
 
 *Note: The very first time you build for a new target (especially Android or iOS), the build process will take several minutes. This is because Cargokit must download the appropriate cross-compilation toolchains (`rustup target add...`) and compile the entire Rust logic layer from scratch.*
 
+> **Note on Android Compilation:** This template currently uses Android Gradle Plugin (AGP) 8.11.1, Kotlin 2.2.20, and Gradle 9.1.0. AGP remains on 8.x until the Flutter SDK and all Android-facing plugins support AGP 9 and built-in Kotlin. For the current configuration, migration criteria, and validation matrix, see [`app/flutter/ANDROID_AGP9_MIGRATION.md`](app/flutter/ANDROID_AGP9_MIGRATION.md).
+
 
 ---
 

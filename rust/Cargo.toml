@@ -4,3 +4,6 @@ members = [
     "crates/qi_core",
     "crates/rust_lib_qi_flutter"
 ]
+
+[workspace.lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }

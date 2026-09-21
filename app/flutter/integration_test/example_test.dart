@@ -1,5 +1,5 @@
-import 'package:patrol/patrol.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:patrol/patrol.dart';
 import 'package:qi_flutter/main.dart'; // Adjust if main.dart doesn't expose the app
 
 void main() {
@@ -17,4 +17,3 @@ void main() {
     },
   );
 }
-

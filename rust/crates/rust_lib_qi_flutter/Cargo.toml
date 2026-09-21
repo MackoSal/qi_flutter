@@ -9,3 +9,6 @@ crate-type = ["cdylib", "staticlib"]
 [dependencies]
 qi_core = { path = "../qi_core" }
 flutter_rust_bridge = "=2.13.0"
+
+[lints]
+workspace = true
