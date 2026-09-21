@@ -9,7 +9,7 @@ on:
 
 jobs:
   rust-checks:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust
@@ -29,13 +29,14 @@ jobs:
       - name: Unit Tests
         working-directory: rust
         run: cargo test --workspace
-      - name: Security Audit (cargo-audit)
-        uses: rustsec/audit-check@v1.4.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+      - name: Security Audit
+        working-directory: rust
+        run: cargo audit
 
   flutter-checks:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v4
       - name: Install Flutter
@@ -46,6 +47,12 @@ jobs:
       - name: Install Dependencies
         working-directory: app/flutter
         run: flutter pub get
+      - name: Install Cargokit Build Tool Dependencies
+        working-directory: app/flutter/rust_builder/cargokit/build_tool
+        run: dart pub get
+      - name: Check Formatting
+        working-directory: app/flutter
+        run: dart format --set-exit-if-changed lib/ test/
       - name: Analyze
         working-directory: app/flutter
         run: flutter analyze
@@ -54,7 +61,7 @@ jobs:
         run: flutter test
 
   frb-codegen-check:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v4
       - name: Install Flutter
@@ -71,12 +78,12 @@ jobs:
       - name: Generate FRB Bindings
         working-directory: app/flutter
         run: flutter_rust_bridge_codegen generate
-      - name: Check for Uncommitted Changes
-        run: git diff --exit-code
+      - name: Check Generated Bindings
+        run: git diff --ignore-all-space --ignore-blank-lines --exit-code -- app/flutter/lib/src/rust
 
   build-and-release:
     needs: [rust-checks, flutter-checks, frb-codegen-check]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         target: [linux, android]

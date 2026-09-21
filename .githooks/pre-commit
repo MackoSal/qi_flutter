@@ -31,18 +31,25 @@ fail() {
 
 # ── Rust checks ──────────────────────────────────────────
 if [ -d "rust" ]; then
-  step "cargo fmt --check"
-  if (cd rust && cargo fmt --check 2>&1); then
+  step "cargo fmt --all -- --check"
+  if (cd rust && cargo fmt --all -- --check 2>&1); then
     pass "Rust formatting"
   else
     fail "Rust formatting — run: cd rust && cargo fmt --all"
   fi
 
-  step "cargo clippy --workspace -- -D warnings"
-  if (cd rust && cargo clippy --workspace -- -D warnings 2>&1); then
+  step "cargo clippy --all-targets --all-features -- -D warnings"
+  if (cd rust && cargo clippy --all-targets --all-features -- -D warnings 2>&1); then
     pass "Clippy"
   else
     fail "Clippy — fix warnings in rust/"
+  fi
+
+  step "cargo test --workspace"
+  if (cd rust && cargo test --workspace 2>&1); then
+    pass "Rust tests"
+  else
+    fail "Rust tests — fix failing tests in rust/"
   fi
 fi
 
@@ -60,6 +67,13 @@ if [ -f "app/flutter/pubspec.yaml" ]; then
     pass "Flutter analyze"
   else
     fail "Flutter analyze — run: cd app/flutter && flutter analyze"
+  fi
+
+  step "flutter test"
+  if (cd app/flutter && flutter test 2>&1); then
+    pass "Flutter tests"
+  else
+    fail "Flutter tests — fix failing tests in app/flutter/"
   fi
 fi
 
