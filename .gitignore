@@ -36,12 +36,9 @@ target/
 rust/target/
 **/*.rs.bk
 
-# Custom Legacy & References
-qiWELLNESS/
-_crispy_reference/
+# Local AI planning workspace (see GEMINI.md)
 tmp_ai_tools/
 
-# AI configs
-.gemini/
+# Local AI tool settings
 .claude/
 .cursorrules

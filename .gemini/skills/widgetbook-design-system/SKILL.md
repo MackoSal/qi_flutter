@@ -1,6 +1,6 @@
 ---
 name: widgetbook-design-system
-description: Use when adding or fixing CrispyTivi Widgetbook design-system coverage, especially official per-widget @UseCase annotations, fixture-backed use cases, design links, and Widgetbook build verification.
+description: Use when setting up, adding, or fixing Widgetbook design-system coverage, especially official per-widget @UseCase annotations, fixture-backed use cases, design links, and Widgetbook build verification.
 ---
 
 # Widgetbook Design System Skill
@@ -18,19 +18,20 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
   name: 'Default',
   type: MyWidget,
   path: '[Core widgets]/MyWidget',
-  designLink: 'Penpot: CrispyTivi Design System / COMPONENT - MyWidget',
+  designLink: 'Penpot: Design System / COMPONENT - MyWidget',
 )
 Widget myWidgetUseCase(BuildContext context) => const MyWidget();
 ```
 
 ## Repository Structure
 
+Widgetbook is not set up yet. Use this layout when adding it:
+
 - Runtime shell: `app/flutter/lib/widgetbook.dart`
 - Shared wrapper: `app/flutter/lib/widgetbook/catalog_surface.dart`
 - Foundation use cases: `app/flutter/lib/widgetbook/foundation_use_cases.dart`
 - Core widget use cases: `app/flutter/lib/widgetbook/core_widget_use_cases.dart`
 - Feature fixtures: `app/flutter/lib/widgetbook/feature_widget_use_cases.dart`
-- Player fixtures: `app/flutter/lib/widgetbook/player_widget_use_cases.dart`
 
 ## Rules
 
@@ -62,8 +63,8 @@ Widget myWidgetUseCase(BuildContext context) => const MyWidget();
   board is visible at overview zoom and has visible child content inside the
   board bounds.
 - If a direct use case is added, update both:
-  - `design/docs/widgetbook-coverage.md`
-  - the Penpot publisher board/link metadata
+  - `design/docs/widgetbook-coverage.md` (create it with the first use case)
+  - the linked Penpot board metadata
 
 ## Verification
 
@@ -72,11 +73,9 @@ Run after changes:
 ```bash
 dart format app/flutter/lib/widgetbook.dart app/flutter/lib/widgetbook/*.dart
 dart analyze app/flutter/lib/widgetbook.dart app/flutter/lib/widgetbook/*.dart
-scripts/design/check_design_tokens.sh
-scripts/design/build_widgetbook.sh
+cd app/flutter && flutter analyze && flutter test
 ```
 
 Known acceptable build warnings:
 
-- Flutter web wasm dry-run warning from `flutter_rust_bridge`.
 - Icon font tree-shaking warning.

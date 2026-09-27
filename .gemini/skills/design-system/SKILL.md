@@ -1,34 +1,32 @@
 ---
 name: design-system
-description: Use when changing CrispyTivi visual design, design tokens, Penpot assets, Widgetbook stories, component catalog coverage, or UI design-system docs.
+description: Use when changing the application's visual design, design tokens, Penpot assets, Widgetbook stories, component catalog coverage, or UI design-system docs.
 ---
 
-# CrispyTivi Design System Skill
+# Design System Skill
 
 Use this workflow for visual design, reusable widgets, theme tokens, Penpot
 handoff, and Widgetbook catalog changes.
 
 ## Ownership Rules
 
-- Flutter implementation tokens are authoritative:
+- Flutter implementation tokens are authoritative (create these folders when the
+  first token or shared widget is added):
   - `app/flutter/lib/core/theme/`
   - `app/flutter/lib/core/widgets/`
 - Penpot mirrors the checked-in Flutter tokens; do not invent parallel token
   names in Penpot or exported JSON.
 - Prefer Locality of Behaviour over DRY. Keep component-specific behavior near
   the widget unless there is a repeated design-system primitive.
-- No new visual token without first checking for an existing `Crispy*` token.
+- No new visual token without first checking for an existing token in `app/flutter/lib/core/theme/`.
 - No new UI dependency unless explicitly requested.
 
 ## Penpot Workflow
 
 1. If Penpot MCP is available, inspect the relevant file/components before
    changing Flutter UI.
-2. If token export is needed, run:
-
-```bash
-scripts/design/export_penpot_tokens.sh
-```
+2. If token export is needed, export the Penpot token set as W3C Design Tokens
+   JSON into `design/tokens/`.
 
 3. If Penpot MCP is not configured, use checked-in exports under `design/` and
    state that Penpot was not available.
@@ -57,13 +55,15 @@ npx @penpot/mcp@beta
 
 1. Read current tokens/widgets before editing.
 2. Update Flutter tokens or widgets in the owning feature.
-3. Add or update `app/flutter/lib/widgetbook.dart` use cases for visible
-   component changes.
+3. If Widgetbook is set up, add or update use cases in
+   `app/flutter/lib/widgetbook/` for visible component changes.
 4. Run:
 
 ```bash
-scripts/design/check_design_tokens.sh
-scripts/design/build_widgetbook.sh
+cd app/flutter
+dart format --set-exit-if-changed lib/ test/
+flutter analyze
+flutter test
 ```
 
 5. For behavior-bearing UI, run targeted Flutter tests or golden tests for the

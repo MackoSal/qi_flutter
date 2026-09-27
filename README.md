@@ -39,10 +39,10 @@ qi_flutter/
 ├── rust/                         # The Rust Workspace (Logic Layer)
 │   ├── Cargo.toml                # Workspace manifest
 │   └── crates/
-│       ├── qi_core/              # Pure Rust business logic, hardware comms (serialport), math. (Zero Flutter knowledge)
+│       ├── qi_core/              # Pure Rust business logic, state, platform access. (Zero Flutter knowledge)
 │       └── rust_lib_qi_flutter/  # FFI Bridge crate. Exposes `qi_core` to Dart via flutter_rust_bridge.
-├── design/                       # UI/UX design tokens and Penpot/Figma integration rules
-├── scripts/                      # Utility scripts (e.g. rename_project.py)
+├── design/                       # Design-system workspace (Penpot/Figma), empty until a design exists
+├── scripts/                      # Utility scripts (e.g. rename_project.py for new projects)
 ├── testing/                      # Test runner configurations and documentation
 ├── AGENTS.md                     # AI System Knowledge Base, Milestones & Migration Rules
 └── README.md                     # This file

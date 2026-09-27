@@ -14,12 +14,12 @@ The portable form works in GitHub Copilot, Claude Code, and Gemini because it ex
 
 ```text
 Read .gemini/rules/architect.md and act as the Architect.
-Design the Flutter-to-Rust boundary for device communication. Do not edit files yet.
+Design the Flutter-to-Rust boundary for background data synchronization. Do not edit files yet.
 ```
 
 ```text
 Read .gemini/skills/plan/SKILL.md and follow its workflow where compatible with your available tools.
-Plan the Ryodoraku measurement feature.
+Plan the settings screen feature.
 ```
 
 Use a **rule** to set the role, scope, quality bar, and output style. Use a **skill** to apply a task workflow. They can be combined:
@@ -43,14 +43,14 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** A request is vague, safety-critical, or likely to hide workflow details.
 
-**Example:** `Read .gemini/rules/analyst.md. Analyze requirements for recording a Ryodoraku measurement session before implementation.`
+**Example:** `Read .gemini/rules/analyst.md. Analyze requirements for exporting user data to CSV before implementation.`
 
 #### `architect` - Architect
 **Purpose:** Define module boundaries, interfaces, trade-offs, and failure modes.
 
 **Use when:** Adding a Rust subsystem, altering FFI contracts, or changing the Flutter/Rust architecture.
 
-**Example:** `Read .gemini/rules/architect.md. Design the serial-device session boundary between qi_core and Flutter.`
+**Example:** `Read .gemini/rules/architect.md. Design the sync session boundary between qi_core and Flutter.`
 
 #### `build-fixer` - Build Fixer
 **Purpose:** Diagnose and fix compile, link, dependency, and native-toolchain failures with the smallest safe change.
@@ -71,21 +71,21 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** A completed feature is overly indirect, repetitive, or difficult to read.
 
-**Example:** `Read .gemini/rules/code-simplifier.md. Simplify the device connection view state without changing behavior.`
+**Example:** `Read .gemini/rules/code-simplifier.md. Simplify the sync status view state without changing behavior.`
 
 #### `critic` - Critic
 **Purpose:** Challenge plans and designs for weak assumptions, omissions, and brittle choices.
 
 **Use when:** A plan or architecture decision needs an independent adversarial review.
 
-**Example:** `Read .gemini/rules/critic.md. Critique the proposed USB/BLE migration plan before implementation.`
+**Example:** `Read .gemini/rules/critic.md. Critique the proposed offline-sync plan before implementation.`
 
 #### `debugger` - Debugger
 **Purpose:** Reproduce, isolate, and correct a runtime defect from evidence such as logs, traces, and failing conditions.
 
 **Use when:** The app hangs, crashes, returns incorrect readings, or a native callback behaves unexpectedly.
 
-**Example:** `Read .gemini/rules/debugger.md. Diagnose why the Flutter app stops receiving serial-port readings after reconnecting.`
+**Example:** `Read .gemini/rules/debugger.md. Diagnose why the Flutter app stops receiving sync updates after the network reconnects.`
 
 #### `dependency-expert` - Dependency Expert
 **Purpose:** Assess package compatibility, upgrade risks, platform impact, and dependency drift.
@@ -97,23 +97,23 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 #### `designer` - Designer
 **Purpose:** Define usable, consistent UI flows, components, states, and visual hierarchy.
 
-**Use when:** Recreating a Lazarus screen, building a new diagnostic workflow, or defining visual states.
+**Use when:** Building a new screen or user workflow, or defining visual states.
 
-**Example:** `Read .gemini/rules/designer.md. Design the Flutter layout that replaces the legacy main diagnostic window.`
+**Example:** `Read .gemini/rules/designer.md. Design an adaptive Flutter layout for the main screen on desktop and mobile.`
 
 #### `executor` - Executor
 **Purpose:** Implement an approved, bounded task and validate the result.
 
 **Use when:** Requirements and the implementation plan are already clear.
 
-**Example:** `Read .gemini/rules/executor.md. Implement the approved device-connection status panel and run relevant checks.`
+**Example:** `Read .gemini/rules/executor.md. Implement the approved sync status panel and run relevant checks.`
 
 #### `explore` - Explorer
 **Purpose:** Inspect the repository and report existing patterns, ownership, and likely edit locations without changing code.
 
-**Use when:** Starting unfamiliar work or locating legacy functionality before migration.
+**Use when:** Starting unfamiliar work or locating existing functionality before changing it.
 
-**Example:** `Read .gemini/rules/explore.md. Find how the Lazarus application sends the calib command and summarize the protocol.`
+**Example:** `Read .gemini/rules/explore.md. Find how Dart calls into Rust through flutter_rust_bridge and summarize the call path.`
 
 #### `git-master` - Git Master
 **Purpose:** Prepare clean commits, safe branch operations, and reviewable Git history.
@@ -127,42 +127,42 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** A task spans multiple files, layers, or milestones.
 
-**Example:** `Read .gemini/rules/planner.md. Plan the first vertical slice for live serial-device readings in Flutter.`
+**Example:** `Read .gemini/rules/planner.md. Plan the first vertical slice for live data updates in Flutter.`
 
 #### `researcher` - Researcher
 **Purpose:** Gather evidence and compare technical alternatives before selecting an approach.
 
 **Use when:** Library, platform, protocol, or design choices are uncertain.
 
-**Example:** `Read .gemini/rules/researcher.md. Compare serialport, native USB, and BLE options for the next hardware layer.`
+**Example:** `Read .gemini/rules/researcher.md. Compare rusqlite and sled for local storage in the Rust core.`
 
 #### `security-reviewer` - Security Reviewer
 **Purpose:** Review secrets, data flows, unsafe boundaries, dependencies, and input handling for security weaknesses.
 
-**Use when:** Adding networking, credentials, persistence, imports, update flows, or external-device input.
+**Use when:** Adding networking, credentials, persistence, imports, update flows, or external input.
 
-**Example:** `Read .gemini/rules/security-reviewer.md. Review the planned REST client and local patient-history storage.`
+**Example:** `Read .gemini/rules/security-reviewer.md. Review the planned REST client and local user-data storage.`
 
 #### `team-executor` - Team Executor
 **Purpose:** Coordinate parallel work, ownership boundaries, hand-offs, and integration checkpoints.
 
 **Use when:** A change genuinely needs multiple agents or contributors working in parallel.
 
-**Example:** `Read .gemini/rules/team-executor.md. Divide the device-session feature between Rust protocol work and Flutter UI work.`
+**Example:** `Read .gemini/rules/team-executor.md. Divide the sync-session feature between Rust protocol work and Flutter UI work.`
 
 #### `test-engineer` - Test Engineer
 **Purpose:** Define test coverage, edge cases, test data, and validation strategy.
 
-**Use when:** Adding parsers, calculations, safety behavior, state machines, or user-facing diagnostic flows.
+**Use when:** Adding parsers, calculations, safety behavior, state machines, or user-facing flows.
 
-**Example:** `Read .gemini/rules/test-engineer.md. Design tests for the serial response parser and its malformed-input behavior.`
+**Example:** `Read .gemini/rules/test-engineer.md. Design tests for the sync response parser and its malformed-input behavior.`
 
 #### `verifier` - Verifier
 **Purpose:** Check the completed implementation against acceptance criteria and regressions.
 
 **Use when:** Before declaring a task done, merging a feature, or releasing a build.
 
-**Example:** `Read .gemini/rules/verifier.md. Verify the device reconnect flow against the approved requirements.`
+**Example:** `Read .gemini/rules/verifier.md. Verify the sync retry flow against the approved requirements.`
 
 #### `vision` - Vision
 **Purpose:** Evaluate whether a feature and UX direction still support the intended product outcome.
@@ -176,7 +176,7 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** Updating README files, documenting a protocol, or recording an architectural decision.
 
-**Example:** `Read .gemini/rules/writer.md. Document the Rust serial-session lifecycle for contributors.`
+**Example:** `Read .gemini/rules/writer.md. Document the Rust sync-session lifecycle for contributors.`
 
 ### Skills
 
@@ -192,7 +192,7 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** A difficult decision benefits from a second model's opinion.
 
-**Example:** `Read .gemini/skills/ask-claude/SKILL.md. Ask Claude to critique the proposed Rust device-state model.`
+**Example:** `Read .gemini/skills/ask-claude/SKILL.md. Ask Claude to critique the proposed Rust sync-state model.`
 
 **Availability:** Requires the local `claude` CLI or compatible OMX integration.
 
@@ -201,7 +201,7 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** You need a second opinion while working in another AI tool.
 
-**Example:** `Read .gemini/skills/ask-gemini/SKILL.md. Ask Gemini for alternative error-recovery strategies for a serial disconnect.`
+**Example:** `Read .gemini/skills/ask-gemini/SKILL.md. Ask Gemini for alternative error-recovery strategies for a lost network connection.`
 
 **Availability:** Requires a Gemini integration or configured external command.
 
@@ -210,14 +210,14 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** The requested result is clear and the task is safe to execute end-to-end.
 
-**Example:** `Read .gemini/skills/autopilot/SKILL.md. Implement the approved mock Ryodoraku chart vertical slice and validate it.`
+**Example:** `Read .gemini/skills/autopilot/SKILL.md. Implement the approved mock-data chart vertical slice and validate it.`
 
 #### `cancel` - Cancel
 **Purpose:** Stop an active workflow or long-running operation in a controlled way.
 
 **Use when:** The task is no longer wanted, the direction changed, or a background process must be stopped.
 
-**Example:** `Read .gemini/skills/cancel/SKILL.md. Cancel the current broad migration workflow and preserve its findings.`
+**Example:** `Read .gemini/skills/cancel/SKILL.md. Cancel the current broad refactoring workflow and preserve its findings.`
 
 #### `code-review` - Code Review
 **Purpose:** Run a structured review of a diff, with findings prioritized by impact.
@@ -240,14 +240,14 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** Product behavior, safety constraints, or user workflow is underspecified.
 
-**Example:** `Read .gemini/skills/deep-interview/SKILL.md. Interview me to define the patient-session save workflow.`
+**Example:** `Read .gemini/skills/deep-interview/SKILL.md. Interview me to define the document save workflow.`
 
 #### `design-system` - Design System
 **Purpose:** Define or apply reusable Flutter theme tokens, components, and visual rules.
 
 **Use when:** Establishing the initial visual system or making screens visually consistent.
 
-**Example:** `Read .gemini/skills/design-system/SKILL.md. Define Flutter theme tokens and core controls for the diagnostic application.`
+**Example:** `Read .gemini/skills/design-system/SKILL.md. Define Flutter theme tokens and core controls for the application.`
 
 #### `doctor` - Doctor
 **Purpose:** Diagnose project and environment health, then suggest or apply focused setup repairs.
@@ -263,14 +263,14 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** You are unsure which role or skill applies.
 
-**Example:** `Read .gemini/skills/help/SKILL.md. Recommend the right workflow for migrating one legacy Pascal dialog to Flutter.`
+**Example:** `Read .gemini/skills/help/SKILL.md. Recommend the right workflow for adding a new settings dialog.`
 
 #### `hud` - HUD
 **Purpose:** Present compact workflow status, active tasks, and progress information.
 
 **Use when:** A supported runner provides a task/status interface and work has several active stages.
 
-**Example:** `Read .gemini/skills/hud/SKILL.md. Show the current implementation and validation status for this migration task.`
+**Example:** `Read .gemini/skills/hud/SKILL.md. Show the current implementation and validation status for this refactoring task.`
 
 **Availability:** Depends on runner-specific status tooling.
 
@@ -306,14 +306,14 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** The work is broad, ambiguous, multi-layered, or expensive to reverse.
 
-**Example:** `Read .gemini/skills/plan/SKILL.md. Plan the migration of the legacy serial communication protocol into qi_core.`
+**Example:** `Read .gemini/skills/plan/SKILL.md. Plan moving the data-sync protocol logic into qi_core.`
 
 #### `ralph` - Ralph
 **Purpose:** Execute an approved plan through a structured, persistent delivery workflow.
 
 **Use when:** A plan already exists and you want an execution-oriented workflow with checkpoints.
 
-**Example:** `Read .gemini/skills/ralph/SKILL.md. Execute the approved plan for mock diagnostic readings.`
+**Example:** `Read .gemini/skills/ralph/SKILL.md. Execute the approved plan for the mock data API.`
 
 **Availability:** Some stages may require OMX-specific agents or commands.
 
@@ -322,23 +322,23 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** A substantial task needs a deliberate plan before using `ralph` for execution.
 
-**Example:** `Read .gemini/skills/ralplan/SKILL.md. Create a Ralph-ready plan for the device connection lifecycle.`
+**Example:** `Read .gemini/skills/ralplan/SKILL.md. Create a Ralph-ready plan for the sync session lifecycle.`
 
 **Availability:** Some stages may require OMX-specific agents or commands.
 
 #### `security-review` - Security Review
 **Purpose:** Perform a structured security review of code, dependencies, data, and external boundaries.
 
-**Use when:** Before handling patient data, network traffic, credentials, updates, or untrusted device input.
+**Use when:** Before handling personal data, network traffic, credentials, updates, or untrusted external input.
 
-**Example:** `Read .gemini/skills/security-review/SKILL.md. Review the data storage design before patient profiles are implemented.`
+**Example:** `Read .gemini/skills/security-review/SKILL.md. Review the data storage design before user profiles are implemented.`
 
 #### `skill` - Skill Authoring
 **Purpose:** Create or improve a reusable project skill.
 
 **Use when:** A repeated workflow needs a documented, triggerable procedure.
 
-**Example:** `Read .gemini/skills/skill/SKILL.md. Create a skill for validating the serial protocol parser.`
+**Example:** `Read .gemini/skills/skill/SKILL.md. Create a skill for validating the sync protocol parser.`
 
 #### `team` - Team
 **Purpose:** Coordinate several agents or contributors around a shared plan, roles, and verification path.
@@ -352,9 +352,9 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 #### `trace` - Trace
 **Purpose:** Follow execution through logs, callbacks, and layers to locate a root cause.
 
-**Use when:** A failure crosses Flutter, FFI, Rust, and hardware boundaries.
+**Use when:** A failure crosses Flutter, FFI, Rust, and platform boundaries.
 
-**Example:** `Read .gemini/skills/trace/SKILL.md. Trace a measurement request from the Flutter button to the serial response.`
+**Example:** `Read .gemini/skills/trace/SKILL.md. Trace a sync request from the Flutter button to the Rust response.`
 
 **Availability:** Benefits from local logs, tracing, `adb logcat`, or equivalent diagnostics.
 
@@ -370,9 +370,9 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 #### `visual-verdict` - Visual Verdict
 **Purpose:** Compare a rendered UI against a design or reference and provide a concrete visual QA verdict.
 
-**Use when:** Recreating a legacy dialog, checking responsive layout, or reviewing UI polish.
+**Use when:** Recreating a reference dialog, checking responsive layout, or reviewing UI polish.
 
-**Example:** `Read .gemini/skills/visual-verdict/SKILL.md. Review the rendered diagnostic screen against the legacy layout reference.`
+**Example:** `Read .gemini/skills/visual-verdict/SKILL.md. Review the rendered main screen against the approved layout reference.`
 
 **Availability:** Requires screenshots, a running app, or design references.
 
@@ -390,7 +390,7 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** The Flutter component library has reached the point where isolated component review is useful.
 
-**Example:** `Read .gemini/skills/widgetbook-design-system/SKILL.md. Set up Widgetbook stories for the shared diagnostic controls.`
+**Example:** `Read .gemini/skills/widgetbook-design-system/SKILL.md. Set up Widgetbook stories for the shared core controls.`
 
 **Availability:** Requires Widgetbook dependencies and configuration.
 
@@ -399,7 +399,7 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Use when:** A task is small enough not to need broad planning or multi-agent coordination.
 
-**Example:** `Read .gemini/skills/worker/SKILL.md. Add a typed Rust model for a device status response and test it.`
+**Example:** `Read .gemini/skills/worker/SKILL.md. Add a typed Rust model for a sync status response and test it.`
 
 ---
 
@@ -417,12 +417,12 @@ Poniższa forma działa przenośnie w GitHub Copilot, Claude Code i Gemini, poni
 
 ```text
 Read .gemini/rules/architect.md and act as the Architect.
-Design the Flutter-to-Rust boundary for device communication. Do not edit files yet.
+Design the Flutter-to-Rust boundary for background data synchronization. Do not edit files yet.
 ```
 
 ```text
 Read .gemini/skills/plan/SKILL.md and follow its workflow where compatible with your available tools.
-Plan the Ryodoraku measurement feature.
+Plan the settings screen feature.
 ```
 
 Użyj **rule**, aby ustawić rolę, zakres odpowiedzialności, standard jakości i styl odpowiedzi. Użyj **skilla**, aby zastosować workflow dla rodzaju zadania. Można je łączyć:
@@ -446,14 +446,14 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy wymaganie jest nieprecyzyjne, krytyczne dla bezpieczeństwa lub może ukrywać szczegóły workflow.
 
-**Przykład:** `Read .gemini/rules/analyst.md. Analyze requirements for recording a Ryodoraku measurement session before implementation.`
+**Przykład:** `Read .gemini/rules/analyst.md. Analyze requirements for exporting user data to CSV before implementation.`
 
 #### `architect` - Architekt
 **Cel:** Definiuje granice modułów, interfejsy, kompromisy i tryby awarii.
 
 **Kiedy użyć:** Przy dodawaniu podsystemu Rust, zmianie kontraktów FFI albo architektury Flutter/Rust.
 
-**Przykład:** `Read .gemini/rules/architect.md. Design the serial-device session boundary between qi_core and Flutter.`
+**Przykład:** `Read .gemini/rules/architect.md. Design the sync session boundary between qi_core and Flutter.`
 
 #### `build-fixer` - Naprawiacz Builda
 **Cel:** Diagnozuje i naprawia błędy kompilacji, linkowania, zależności oraz native toolchain najmniejszą bezpieczną zmianą.
@@ -474,21 +474,21 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy ukończona funkcja jest zbyt pośrednia, powtarzalna lub trudna do czytania.
 
-**Przykład:** `Read .gemini/rules/code-simplifier.md. Simplify the device connection view state without changing behavior.`
+**Przykład:** `Read .gemini/rules/code-simplifier.md. Simplify the sync status view state without changing behavior.`
 
 #### `critic` - Krytyk
 **Cel:** Podważa plany i projekty pod kątem słabych założeń, pominięć i kruchych wyborów.
 
 **Kiedy użyć:** Gdy plan lub decyzja architektoniczna wymaga niezależnego, krytycznego przeglądu.
 
-**Przykład:** `Read .gemini/rules/critic.md. Critique the proposed USB/BLE migration plan before implementation.`
+**Przykład:** `Read .gemini/rules/critic.md. Critique the proposed offline-sync plan before implementation.`
 
 #### `debugger` - Debugger
 **Cel:** Odtwarza, izoluje i poprawia błąd wykonania na podstawie logów, trace'ów i warunków awarii.
 
 **Kiedy użyć:** Gdy aplikacja zawiesza się, crashuje, zwraca błędne odczyty lub callback natywny zachowuje się nieoczekiwanie.
 
-**Przykład:** `Read .gemini/rules/debugger.md. Diagnose why the Flutter app stops receiving serial-port readings after reconnecting.`
+**Przykład:** `Read .gemini/rules/debugger.md. Diagnose why the Flutter app stops receiving sync updates after the network reconnects.`
 
 #### `dependency-expert` - Ekspert Zależności
 **Cel:** Ocena zgodności pakietów, ryzyka aktualizacji, wpływu na platformy i dryfu zależności.
@@ -500,23 +500,23 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 #### `designer` - Projektant
 **Cel:** Definiuje użyteczne i spójne przepływy UI, komponenty, stany oraz hierarchię wizualną.
 
-**Kiedy użyć:** Przy odtwarzaniu ekranu Lazarusa, budowaniu workflow diagnostycznego albo definiowaniu stanów wizualnych.
+**Kiedy użyć:** Przy budowaniu nowego ekranu lub przepływu użytkownika albo definiowaniu stanów wizualnych.
 
-**Przykład:** `Read .gemini/rules/designer.md. Design the Flutter layout that replaces the legacy main diagnostic window.`
+**Przykład:** `Read .gemini/rules/designer.md. Design an adaptive Flutter layout for the main screen on desktop and mobile.`
 
 #### `executor` - Wykonawca
 **Cel:** Implementuje zaakceptowane, ograniczone zadanie i waliduje wynik.
 
 **Kiedy użyć:** Gdy wymagania i plan implementacji są już jasne.
 
-**Przykład:** `Read .gemini/rules/executor.md. Implement the approved device-connection status panel and run relevant checks.`
+**Przykład:** `Read .gemini/rules/executor.md. Implement the approved sync status panel and run relevant checks.`
 
 #### `explore` - Eksplorator
 **Cel:** Bada repozytorium i raportuje istniejące wzorce, odpowiedzialności oraz prawdopodobne miejsca zmian bez edycji kodu.
 
-**Kiedy użyć:** Przy rozpoczynaniu nieznanej pracy lub szukaniu funkcjonalności legacy przed migracją.
+**Kiedy użyć:** Przy rozpoczynaniu nieznanej pracy lub szukaniu istniejącej funkcjonalności przed jej zmianą.
 
-**Przykład:** `Read .gemini/rules/explore.md. Find how the Lazarus application sends the calib command and summarize the protocol.`
+**Przykład:** `Read .gemini/rules/explore.md. Find how Dart calls into Rust through flutter_rust_bridge and summarize the call path.`
 
 #### `git-master` - Ekspert Git
 **Cel:** Przygotowuje czyste commity, bezpieczne operacje na branchach i historię łatwą do review.
@@ -530,42 +530,42 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy zadanie obejmuje wiele plików, warstw lub milestone'ów.
 
-**Przykład:** `Read .gemini/rules/planner.md. Plan the first vertical slice for live serial-device readings in Flutter.`
+**Przykład:** `Read .gemini/rules/planner.md. Plan the first vertical slice for live data updates in Flutter.`
 
 #### `researcher` - Badacz
 **Cel:** Zbiera dowody i porównuje alternatywy techniczne przed wyborem podejścia.
 
 **Kiedy użyć:** Gdy nie ma pewności co do biblioteki, platformy, protokołu albo rozwiązania projektowego.
 
-**Przykład:** `Read .gemini/rules/researcher.md. Compare serialport, native USB, and BLE options for the next hardware layer.`
+**Przykład:** `Read .gemini/rules/researcher.md. Compare rusqlite and sled for local storage in the Rust core.`
 
 #### `security-reviewer` - Recenzent Bezpieczeństwa
 **Cel:** Analizuje sekrety, przepływy danych, niebezpieczne granice, zależności i obsługę wejścia pod kątem luk bezpieczeństwa.
 
-**Kiedy użyć:** Przy dodawaniu sieci, poświadczeń, persystencji, importów, aktualizacji albo danych z urządzenia zewnętrznego.
+**Kiedy użyć:** Przy dodawaniu sieci, poświadczeń, persystencji, importów, aktualizacji albo danych z zewnętrznych źródeł.
 
-**Przykład:** `Read .gemini/rules/security-reviewer.md. Review the planned REST client and local patient-history storage.`
+**Przykład:** `Read .gemini/rules/security-reviewer.md. Review the planned REST client and local user-data storage.`
 
 #### `team-executor` - Koordynator Zespołu
 **Cel:** Koordynuje pracę równoległą, granice odpowiedzialności, przekazania i punkty integracji.
 
 **Kiedy użyć:** Gdy zmiana rzeczywiście wymaga kilku agentów albo współpracowników pracujących równolegle.
 
-**Przykład:** `Read .gemini/rules/team-executor.md. Divide the device-session feature between Rust protocol work and Flutter UI work.`
+**Przykład:** `Read .gemini/rules/team-executor.md. Divide the sync-session feature between Rust protocol work and Flutter UI work.`
 
 #### `test-engineer` - Inżynier Testów
 **Cel:** Definiuje pokrycie testami, przypadki brzegowe, dane testowe i strategię walidacji.
 
-**Kiedy użyć:** Przy dodawaniu parserów, obliczeń, zachowania krytycznego dla bezpieczeństwa, maszyn stanów albo diagnostycznych przepływów użytkownika.
+**Kiedy użyć:** Przy dodawaniu parserów, obliczeń, zachowania krytycznego dla bezpieczeństwa, maszyn stanów albo przepływów użytkownika.
 
-**Przykład:** `Read .gemini/rules/test-engineer.md. Design tests for the serial response parser and its malformed-input behavior.`
+**Przykład:** `Read .gemini/rules/test-engineer.md. Design tests for the sync response parser and its malformed-input behavior.`
 
 #### `verifier` - Weryfikator
 **Cel:** Sprawdza ukończoną implementację względem kryteriów akceptacji i regresji.
 
 **Kiedy użyć:** Przed uznaniem zadania za ukończone, mergem funkcji albo wydaniem builda.
 
-**Przykład:** `Read .gemini/rules/verifier.md. Verify the device reconnect flow against the approved requirements.`
+**Przykład:** `Read .gemini/rules/verifier.md. Verify the sync retry flow against the approved requirements.`
 
 #### `vision` - Wizja Produktowa
 **Cel:** Ocenia, czy funkcja i kierunek UX nadal wspierają zamierzony rezultat produktu.
@@ -579,7 +579,7 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Przy aktualizowaniu README, dokumentowaniu protokołu albo rejestrowaniu decyzji architektonicznej.
 
-**Przykład:** `Read .gemini/rules/writer.md. Document the Rust serial-session lifecycle for contributors.`
+**Przykład:** `Read .gemini/rules/writer.md. Document the Rust sync-session lifecycle for contributors.`
 
 ### Skille
 
@@ -595,7 +595,7 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy trudna decyzja skorzysta na opinii drugiego modelu.
 
-**Przykład:** `Read .gemini/skills/ask-claude/SKILL.md. Ask Claude to critique the proposed Rust device-state model.`
+**Przykład:** `Read .gemini/skills/ask-claude/SKILL.md. Ask Claude to critique the proposed Rust sync-state model.`
 
 **Dostępność:** Wymaga lokalnego `claude` CLI albo zgodnej integracji OMX.
 
@@ -604,7 +604,7 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy podczas pracy w innym narzędziu potrzebujesz drugiej opinii.
 
-**Przykład:** `Read .gemini/skills/ask-gemini/SKILL.md. Ask Gemini for alternative error-recovery strategies for a serial disconnect.`
+**Przykład:** `Read .gemini/skills/ask-gemini/SKILL.md. Ask Gemini for alternative error-recovery strategies for a lost network connection.`
 
 **Dostępność:** Wymaga integracji Gemini albo skonfigurowanej komendy zewnętrznej.
 
@@ -613,14 +613,14 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy oczekiwany rezultat jest jasny, a zadanie można bezpiecznie wykonać end-to-end.
 
-**Przykład:** `Read .gemini/skills/autopilot/SKILL.md. Implement the approved mock Ryodoraku chart vertical slice and validate it.`
+**Przykład:** `Read .gemini/skills/autopilot/SKILL.md. Implement the approved mock-data chart vertical slice and validate it.`
 
 #### `cancel` - Anuluj
 **Cel:** Kontrolowanie zatrzymuje aktywny workflow albo długo działającą operację.
 
 **Kiedy użyć:** Gdy zadanie nie jest już potrzebne, kierunek się zmienił albo trzeba zatrzymać proces w tle.
 
-**Przykład:** `Read .gemini/skills/cancel/SKILL.md. Cancel the current broad migration workflow and preserve its findings.`
+**Przykład:** `Read .gemini/skills/cancel/SKILL.md. Cancel the current broad refactoring workflow and preserve its findings.`
 
 #### `code-review` - Przegląd Kodu
 **Cel:** Wykonuje uporządkowany review diffu z wynikami uporządkowanymi według wpływu.
@@ -643,14 +643,14 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy zachowanie produktu, ograniczenia bezpieczeństwa albo workflow użytkownika są niedoprecyzowane.
 
-**Przykład:** `Read .gemini/skills/deep-interview/SKILL.md. Interview me to define the patient-session save workflow.`
+**Przykład:** `Read .gemini/skills/deep-interview/SKILL.md. Interview me to define the document save workflow.`
 
 #### `design-system` - System Projektowy
 **Cel:** Definiuje lub stosuje wielokrotnie używane tokeny motywu Flutter, komponenty i zasady wizualne.
 
 **Kiedy użyć:** Przy tworzeniu początkowego systemu wizualnego albo ujednolicaniu ekranów.
 
-**Przykład:** `Read .gemini/skills/design-system/SKILL.md. Define Flutter theme tokens and core controls for the diagnostic application.`
+**Przykład:** `Read .gemini/skills/design-system/SKILL.md. Define Flutter theme tokens and core controls for the application.`
 
 #### `doctor` - Diagnostyka Środowiska
 **Cel:** Diagnozuje zdrowie projektu i środowiska, a następnie sugeruje lub stosuje skupione naprawy konfiguracji.
@@ -666,14 +666,14 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy nie wiesz, która rola lub skill pasuje do zadania.
 
-**Przykład:** `Read .gemini/skills/help/SKILL.md. Recommend the right workflow for migrating one legacy Pascal dialog to Flutter.`
+**Przykład:** `Read .gemini/skills/help/SKILL.md. Recommend the right workflow for adding a new settings dialog.`
 
 #### `hud` - HUD
 **Cel:** Pokazuje zwięzły status workflow, aktywne zadania i informacje o postępie.
 
 **Kiedy użyć:** Gdy obsługiwany runner udostępnia status interfejs, a praca ma kilka aktywnych etapów.
 
-**Przykład:** `Read .gemini/skills/hud/SKILL.md. Show the current implementation and validation status for this migration task.`
+**Przykład:** `Read .gemini/skills/hud/SKILL.md. Show the current implementation and validation status for this refactoring task.`
 
 **Dostępność:** Zależy od narzędzi statusu specyficznych dla runnera.
 
@@ -709,14 +709,14 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy praca jest szeroka, niejednoznaczna, wielowarstwowa albo kosztowna do odwrócenia.
 
-**Przykład:** `Read .gemini/skills/plan/SKILL.md. Plan the migration of the legacy serial communication protocol into qi_core.`
+**Przykład:** `Read .gemini/skills/plan/SKILL.md. Plan moving the data-sync protocol logic into qi_core.`
 
 #### `ralph` - Ralph
 **Cel:** Wykonuje zaakceptowany plan przez uporządkowany, konsekwentny workflow dostarczania.
 
 **Kiedy użyć:** Gdy plan już istnieje i chcesz workflow skoncentrowany na wykonaniu z punktami kontrolnymi.
 
-**Przykład:** `Read .gemini/skills/ralph/SKILL.md. Execute the approved plan for mock diagnostic readings.`
+**Przykład:** `Read .gemini/skills/ralph/SKILL.md. Execute the approved plan for the mock data API.`
 
 **Dostępność:** Część etapów może wymagać agentów albo komend specyficznych dla OMX.
 
@@ -725,23 +725,23 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy istotne zadanie potrzebuje przemyślanego planu przed użyciem `ralph` do wykonania.
 
-**Przykład:** `Read .gemini/skills/ralplan/SKILL.md. Create a Ralph-ready plan for the device connection lifecycle.`
+**Przykład:** `Read .gemini/skills/ralplan/SKILL.md. Create a Ralph-ready plan for the sync session lifecycle.`
 
 **Dostępność:** Część etapów może wymagać agentów albo komend specyficznych dla OMX.
 
 #### `security-review` - Przegląd Bezpieczeństwa
 **Cel:** Wykonuje uporządkowany przegląd bezpieczeństwa kodu, zależności, danych i zewnętrznych granic.
 
-**Kiedy użyć:** Przed obsługą danych pacjenta, ruchu sieciowego, poświadczeń, aktualizacji albo niezaufanego wejścia z urządzenia.
+**Kiedy użyć:** Przed obsługą danych osobowych, ruchu sieciowego, poświadczeń, aktualizacji albo niezaufanego wejścia z zewnątrz.
 
-**Przykład:** `Read .gemini/skills/security-review/SKILL.md. Review the data storage design before patient profiles are implemented.`
+**Przykład:** `Read .gemini/skills/security-review/SKILL.md. Review the data storage design before user profiles are implemented.`
 
 #### `skill` - Tworzenie Skilla
 **Cel:** Tworzy lub ulepsza wielokrotnie używany skill projektowy.
 
 **Kiedy użyć:** Gdy powtarzalny workflow potrzebuje udokumentowanej, wywoływalnej procedury.
 
-**Przykład:** `Read .gemini/skills/skill/SKILL.md. Create a skill for validating the serial protocol parser.`
+**Przykład:** `Read .gemini/skills/skill/SKILL.md. Create a skill for validating the sync protocol parser.`
 
 #### `team` - Zespół
 **Cel:** Koordynuje kilku agentów lub współpracowników wokół wspólnego planu, ról i ścieżki weryfikacji.
@@ -757,7 +757,7 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy błąd przechodzi przez granice Flutter, FFI, Rust i sprzęt.
 
-**Przykład:** `Read .gemini/skills/trace/SKILL.md. Trace a measurement request from the Flutter button to the serial response.`
+**Przykład:** `Read .gemini/skills/trace/SKILL.md. Trace a sync request from the Flutter button to the Rust response.`
 
 **Dostępność:** Korzysta z lokalnych logów, tracingu, `adb logcat` albo podobnej diagnostyki.
 
@@ -773,9 +773,9 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 #### `visual-verdict` - Ocena Wizualna
 **Cel:** Porównuje wyrenderowane UI z projektem albo referencją i daje konkretny werdykt visual QA.
 
-**Kiedy użyć:** Przy odtwarzaniu dialogu legacy, kontroli layoutu responsywnego albo przeglądzie dopracowania UI.
+**Kiedy użyć:** Przy odtwarzaniu dialogu wzorcowego, kontroli layoutu responsywnego albo przeglądzie dopracowania UI.
 
-**Przykład:** `Read .gemini/skills/visual-verdict/SKILL.md. Review the rendered diagnostic screen against the legacy layout reference.`
+**Przykład:** `Read .gemini/skills/visual-verdict/SKILL.md. Review the rendered main screen against the approved layout reference.`
 
 **Dostępność:** Wymaga screenshotów, działającej aplikacji albo referencji projektowej.
 
@@ -793,7 +793,7 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy biblioteka komponentów Flutter jest na etapie, w którym przydatny jest izolowany przegląd komponentów.
 
-**Przykład:** `Read .gemini/skills/widgetbook-design-system/SKILL.md. Set up Widgetbook stories for the shared diagnostic controls.`
+**Przykład:** `Read .gemini/skills/widgetbook-design-system/SKILL.md. Set up Widgetbook stories for the shared core controls.`
 
 **Dostępność:** Wymaga zależności i konfiguracji Widgetbook.
 
@@ -802,4 +802,4 @@ Use .gemini/skills/plan/SKILL.md. First apply the Analyst role from
 
 **Kiedy użyć:** Gdy zadanie jest na tyle małe, że nie wymaga szerokiego planowania ani koordynacji wielu agentów.
 
-**Przykład:** `Read .gemini/skills/worker/SKILL.md. Add a typed Rust model for a device status response and test it.`
+**Przykład:** `Read .gemini/skills/worker/SKILL.md. Add a typed Rust model for a sync status response and test it.`

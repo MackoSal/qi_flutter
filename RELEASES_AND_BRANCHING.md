@@ -7,11 +7,11 @@ This document describes the collaboration rules using Git version control and th
 We use a simplified **GitHub Flow** model. This is an ideal compromise between safety and avoiding excessive bureaucracy in a small team.
 
 ### Main Rules:
-- **`master` is sacred**: The `master` branch must always be in a state that allows the application to be built and run (it must always pass all CI tests). The main developer (MackoSal) can work directly on `master`, but for larger changes, using feature branches is highly recommended.
+- **`master` is sacred**: The `master` branch must always be in a state that allows the application to be built and run (it must always pass all CI tests). The repository maintainer can work directly on `master`, but for larger changes, using feature branches is highly recommended.
 - **Other Developers (Collaborators)**: Anyone else contributing to the project must **NEVER** push code directly to `master`.
-- **Feature Branches**: Every new feature or bug fix should be created on a new branch branched off from `master` (e.g., `git checkout -b feature/new-reading` or `fix/serial-port-crash`).
+- **Feature Branches**: Every new feature or bug fix should be created on a new branch branched off from `master` (e.g., `git checkout -b feature/settings-screen` or `fix/startup-crash`).
 - **Pull Requests (PR)**: When the work on a branch is ready, the developer creates a Pull Request to `master`. At this point, **GitHub Actions automatically tests the code**.
-- **Code Review**: The branch is merged into `master` only after the Pull Request is approved (e.g., by MackoSal) and when the CI/CD pipeline turns green.
+- **Code Review**: The branch is merged into `master` only after the Pull Request is approved by the repository maintainer and when the CI/CD pipeline turns green.
 
 ## 2. Release Strategy (Tagging and Release)
 

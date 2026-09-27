@@ -1,5 +1,8 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+//! Pure Rust domain logic. This crate must not depend on Flutter or FRB.
+
+/// Builds the greeting shown by the demo screen.
+pub fn greeting(name: &str) -> String {
+    format!("Hello, {name}!")
 }
 
 #[cfg(test)]
@@ -7,8 +10,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn greeting_includes_name() {
+        assert_eq!(greeting("Tom"), "Hello, Tom!");
     }
 }

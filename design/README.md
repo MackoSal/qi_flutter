@@ -1,70 +1,43 @@
-# FlutterRustApp Design System
+# Design System Workspace
 
-This folder is the repository-owned bridge between Penpot, Flutter design
-tokens, and the Widgetbook component catalog.
+This folder is the repository-owned bridge between the design tool (Penpot or
+Figma), Flutter design tokens, and a future Widgetbook component catalog.
+
+**Status:** no design has been created yet. The folders below are placeholders
+that define where design artifacts go once the design work starts.
 
 ## Surfaces
 
-- `tokens/` - exported or hand-curated design token JSON.
-- `assets/` - exported design assets that are safe to commit.
+- `tokens/` - exported or hand-curated design token JSON
+  ([W3C Design Tokens format](https://tr.designtokens.org/format/)).
+- `assets/` - exported design assets that are safe to commit (logos, icons).
 - `docs/` - design decisions, mapping notes, and agent handoff docs.
-
-## Current Design System
-
-- `docs/design-system.md` - current coverage and remaining gaps.
-- `penpot/publish_editable_design_system.js` - Penpot MCP publisher payload
-  that creates editable token, component, pattern, and representative screen
-  boards in the local Penpot file.
-- `penpot/publish_design_assets.py` - local Penpot MCP REPL publisher that
-  uploads checked-in Flutter logo artwork into the design-system asset board.
-- `scripts/design/generate_widgetbook_coverage.py` - regenerates the
-  Widgetbook coverage matrix from Flutter widget/screen sources.
+- `penpot/` - Penpot self-hosting and MCP integration notes.
+- `figma/` - Figma integration notes.
 
 ## Tooling Choice: Penpot vs Figma
 
-This template supports both **Penpot** and **Figma**. You can choose one based on your project's needs, or even mix them.
+This template supports both **Penpot** and **Figma**. Choose one based on the
+project's needs, or mix them.
 
-- **Penpot**: An open-source, self-hostable design tool. See `design/penpot/README.md` for self-hosting instructions and MCP integration.
-- **Figma**: The industry standard cloud-based design tool. See `design/figma/README.md`.
+- **Penpot**: An open-source, self-hostable design tool. See
+  `penpot/README.md` for self-hosting instructions and MCP integration.
+- **Figma**: The industry-standard cloud-based design tool. See
+  `figma/README.md`.
 
-Once you decide on a tool, feel free to delete the folder of the tool you aren't using.
+Once you decide on a tool, you can delete the folder of the tool you are not
+using.
 
-## Widgetbook Annotations
+## Source of Truth
 
-`app/flutter/lib/widgetbook.dart` uses official `@widgetbook.UseCase`
-annotations from `widgetbook_annotation`. Use cases are split by widget family
-under `app/flutter/lib/widgetbook/`; each cataloged widget has its own annotated
-builder and Penpot design link.
+When the design system is implemented, Flutter tokens and shared widgets are
+authoritative. The planned locations are:
 
-## Source Of Truth
+- `app/flutter/lib/core/theme/` - theme and design tokens.
+- `app/flutter/lib/core/widgets/` - reusable design-system widgets.
 
-Flutter implementation tokens remain under:
+The design tool should mirror those tokens instead of inventing parallel names.
+If a new value is needed, add it to the Flutter tokens first, then update the
+design tool and `tokens/`.
 
-- `app/flutter/lib/core/theme/`
-- `app/flutter/lib/core/widgets/`
-
-Penpot should mirror those tokens instead of inventing parallel names. If a
-new value is needed, add it to Flutter tokens first, then export/update Penpot.
-
-## Local Workflow
-
-```bash
-scripts/design/generate_widgetbook_coverage.py
-scripts/design/check_design_tokens.sh
-scripts/design/build_widgetbook.sh
-scripts/design/serve_widgetbook.sh
-```
-
-Penpot token export is intentionally environment-driven so no access tokens or
-file IDs are committed:
-
-```bash
-PENPOT_TOKENS_FILE=/path/to/export.json scripts/design/export_penpot_tokens.sh
-```
-
-or:
-
-```bash
-PENPOT_EXPORT_CMD='penpot-export --file "$PENPOT_FILE_ID"' \
-  scripts/design/export_penpot_tokens.sh
-```
+See `docs/agent-workflow.md` for the step-by-step workflow.

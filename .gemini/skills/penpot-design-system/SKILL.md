@@ -1,6 +1,6 @@
 ---
 name: penpot-design-system
-description: Use when creating, resetting, publishing, or verifying CrispyTivi Penpot design-system artifacts through local Penpot MCP/REPL, including tokens, components, variants, assets, and editable screen patterns.
+description: Use when creating, resetting, publishing, or verifying Penpot design-system artifacts through local Penpot MCP/REPL, including tokens, components, variants, assets, and editable screen patterns.
 ---
 
 # Penpot Design System Skill
@@ -11,7 +11,7 @@ Use this with `$design-system` when Penpot is part of the work.
 
 - Flutter tokens are authoritative:
   - `app/flutter/lib/core/theme/`
-  - `design/tokens/crispy.tokens.json`
+  - `design/tokens/` (exported token JSON)
 - Penpot mirrors Flutter token names.
 - Use official Penpot concepts: token sets, libraries/components, variants,
   assets, comments/annotations, pages/boards.
@@ -39,7 +39,7 @@ has shown unreliable cross-page deletion/reparenting. Build on one active page.
 
 1. Reset active Penpot page before rebuild.
 2. Verify active page board count is zero.
-3. Populate Penpot token set `CrispyTivi` using `penpot.library.local.tokens`.
+3. Populate a Penpot token set named `DesignSystem` using `penpot.library.local.tokens`.
 4. Upload real repo assets before drawing placeholder equivalents.
 5. Build editable boards from shapes:
    - `FOUNDATION - ...`
@@ -102,12 +102,12 @@ has shown unreliable cross-page deletion/reparenting. Build on one active page.
 ## Verification Snippet
 
 ```js
-const tokenSet = penpot.library.local.tokens.sets.find(s => s.name === 'CrispyTivi');
+const tokenSet = penpot.library.local.tokens.sets.find(s => s.name === 'DesignSystem');
 const boards = [];
 for (const p of penpot.currentFile.pages) {
   for (const s of (p.root.children || [])) {
     if (s.type === 'board' &&
-        s.getSharedPluginData?.('crispy-tivi','artifact') === 'editable-design-system') {
+        s.getSharedPluginData?.('design-system','artifact') === 'editable-design-system') {
       boards.push({ page: p.name, name: s.name, children: s.children?.length || 0 });
     }
   }
@@ -124,7 +124,7 @@ const boards = [];
 for (const p of penpot.currentFile.pages) {
   for (const s of (p.root.children || [])) {
     if (s.type === 'board' &&
-        s.getSharedPluginData?.('crispy-tivi','artifact') === 'editable-design-system') {
+        s.getSharedPluginData?.('design-system','artifact') === 'editable-design-system') {
       const children = s.children || [];
       const visibleChildren = children.filter((c) =>
         (c.x ?? 0) >= s.x - 10 &&
