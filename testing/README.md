@@ -1,36 +1,46 @@
-# Testing (E2E & Integration)
+# Testing and platform verification
 
-This project uses **Patrol** (`patrol`) for native UI integration testing. 
-Since the Web platform is explicitly not supported, Web-based testing tools like Playwright are not included.
+## Quick local checks
 
-## Test suites
+Before committing, run Rust checks from `rust`:
 
-| File | Framework | Platforms |
+```bash
+cargo fmt --all -- --check
+cargo clippy --all-targets --all-features -- -D warnings
+cargo test --workspace
+```
+
+Then run Flutter checks from `app/flutter`:
+
+```bash
+dart format --set-exit-if-changed lib/ test/
+flutter analyze
+flutter test
+```
+
+CI runs these checks and verifies that FRB code generation does not change the committed bindings.
+
+## What CI checks for each target
+
+The workflow builds the application and Rust FFI library for Linux, Windows, macOS, Android, and the iOS Simulator. A CI build confirms that the native target compiles; it does not confirm behavior on every device model or vendor configuration.
+
+## Device integration tests
+
+| File | Command | Requirements |
 | --- | --- | --- |
-| `app/flutter/test/` | `flutter_test` (widget tests, no Rust) | host, runs in CI |
-| `app/flutter/integration_test/simple_test.dart` | `integration_test` | any device, including Linux/Windows/macOS desktop |
-| `app/flutter/integration_test/example_test.dart` | Patrol | Android and iOS devices or emulators only |
+| `app/flutter/integration_test/simple_test.dart` | `flutter test integration_test/simple_test.dart -d <device-id>` | Native target/device listed by `flutter devices` |
+| `app/flutter/integration_test/example_test.dart` | `patrol test -t integration_test/example_test.dart` | Patrol CLI and Android/iOS emulator or device |
 
-Patrol does not support Linux or Windows desktop; running a Patrol test with
-`flutter test -d linux` fails with `Unsupported operation: Unkown platform`.
+Patrol does not support Linux or Windows desktop. Use the first Flutter integration test for a basic native test run; Patrol is for mobile device-specific interactions.
 
-## Running desktop integration tests
+## Platform matrix and local requirements
 
-```bash
-cd app/flutter
-flutter test integration_test/simple_test.dart -d linux
-```
+| Platform | CI build | Local build / runtime test |
+| --- | --- | --- |
+| Linux | Yes | Linux with GTK 3, CMake, Ninja, pkg-config, and a C/C++ compiler |
+| Windows | Yes | Windows and Visual Studio 2022 with the C++ workload |
+| macOS | Yes | macOS and Xcode |
+| Android | Yes | Android SDK/NDK; emulator or device to run |
+| iOS | Yes, Simulator target | macOS and Xcode; a physical device requires signing setup |
 
-## Running Patrol tests
-
-To run the integration tests via Patrol locally (assuming an Android emulator or device is running):
-
-```bash
-cd app/flutter
-patrol test -t integration_test/example_test.dart
-```
-
-*Note: You need to have the `patrol_cli` installed globally on your machine:*
-```bash
-dart pub global activate patrol_cli
-```
+A build and a runtime test are separate steps. After a successful build, run the application or integration test on a locally available device if the change affects native behavior.

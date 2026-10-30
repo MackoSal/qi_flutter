@@ -46,9 +46,19 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  rust_lib_qi_
 
 The FRB version must stay identical in `rust/crates/rust_lib_qi_flutter/Cargo.toml`, `app/flutter/pubspec.yaml`, and `.github/workflows/ci-cd.yml`.
 
+### Documentation language
+
+- Preserve the existing language of each documentation file when editing it. Do not translate a file or change its language unless the user explicitly asks for that change.
+- Write new repository documentation in English by default, matching this repository’s established documentation language, unless the user requests another language.
+
+### Git identity
+
+- For commits in this repository, use `Maciej Salwa <macieks1515@wp.pl>`, matching the repository owner's existing commit history. Never use `maciej.salwa.ext@qorix.ai` for this repository.
+- Before creating or amending a commit, verify the repository-local identity with `git config --local user.name` and `git config --local user.email`.
+
 ### Quality gates
 
-The pre-commit hook (`.githooks/pre-commit`) and CI (`.github/workflows/ci-cd.yml`) run the same checks. Enable the hook once per clone:
+The pre-commit hook (`.githooks/pre-commit`) runs the local Rust and Flutter quality checks that CI also runs. CI adds FRB binding verification, dependency auditing, and native target builds. Enable the hook once per clone:
 
 ```bash
 git config core.hooksPath .githooks
@@ -62,13 +72,20 @@ git config core.hooksPath .githooks
 | Dart formatting | `dart format --set-exit-if-changed lib/ test/` (`app/flutter/`) |
 | Dart analysis | `flutter analyze` (`app/flutter/`) |
 | Flutter tests | `flutter test` (`app/flutter/`) |
+| Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent) |
 | Integration tests | `patrol test` (`app/flutter/`, requires a device, see `testing/README.md`) |
+
+CI runs the Rust and Flutter checks, verifies generated FRB bindings, and builds Linux, Windows, macOS, Android, and the iOS Simulator target. Device execution and Patrol tests still require a local device/emulator.
 
 ### Documentation layout
 
 - `README.md` - setup and running the app.
+- `app/flutter/README.md` - beginner setup, commands, platform prerequisites, and troubleshooting.
+- `docs/START_HERE.md` - repository path map and Flutter-to-Rust example workflow.
+- `docs/NEW_PROJECT.md` - creating a product repository and renaming identifiers.
 - `RELEASES_AND_BRANCHING.md` - branching model and tag-driven releases.
 - `app/flutter/ANDROID_AGP9_MIGRATION.md` - Android Gradle Plugin version policy.
+- `testing/README.md` - local checks, CI target builds, and device testing.
 - `design/` - design-system workspace (no design has been created yet).
 - `AI_TOOLS_HELPERS.md` - AI roles and skills under `.gemini/`.
 
@@ -81,7 +98,7 @@ git config core.hooksPath .githooks
 
 ## 6. Creating a New Project from This Template
 
-1. Rename the project: `python3 scripts/rename_project.py qi_flutter <new_name>`.
-2. Set a real Android `applicationId` and iOS/macOS bundle identifiers.
+1. Follow `docs/NEW_PROJECT.md`; preview and rename with `python3 scripts/rename_project.py qi_flutter <new_name> --application-id <reverse-DNS-id>`.
+2. Set product-specific publisher information, icons, signing, and release secrets.
 3. Replace the demo `greet` API and the quickstart screen with the first real feature.
 4. Replace this section of `AGENTS.md` with the product-specific goals and roadmap.

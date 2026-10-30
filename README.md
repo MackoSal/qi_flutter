@@ -1,96 +1,29 @@
-# Flutter + Rust Native Template
+# Flutter + Rust: native application template
 
-This repository is a universal, high-performance template for building native **Flutter** (UI) and **Rust** (Logic) applications. 
-It uses a modular workspace pattern connected via `flutter_rust_bridge` and `cargokit`.
+A ready starting point for desktop and mobile applications. Flutter renders the UI, Rust contains the application logic, and `flutter_rust_bridge` connects them directly through FFI. Web is not supported.
 
-Due to the native multi-threading and architecture requirements, **the Web platform is explicitly not supported**. This is a 100% native application template for Desktop (Windows/Linux/macOS) and Mobile (Android/iOS).
+## Start here
 
----
+1. [Install the tools and run the application](app/flutter/README.md).
+2. [Explore the repository and learn where to make changes](docs/START_HERE.md).
+3. [Create a project from the template and rename it](docs/NEW_PROJECT.md).
 
-## 1. System Dependencies
+The repository includes a working `greet` demo. Use it as an example of the Flutter → Rust flow, not as product logic.
 
-To compile and run this project, you need the following tools installed:
+## Platforms
 
-### Global Requirements
-*   [Flutter SDK](https://docs.flutter.dev/get-started/install)
-*   [Rust Toolchain](https://rustup.rs/) (including `cargo` and `rustup`)
-*   **flutter_rust_bridge_codegen** (v2): 
-    Run `cargo install flutter_rust_bridge_codegen`
+| Platform | Built in CI | Run/device testing |
+| --- | --- | --- |
+| Linux | Yes | Locally on Linux |
+| Windows | Yes | Locally on Windows |
+| macOS | Yes | Locally on macOS |
+| Android | Yes | Android emulator or device |
+| iOS | Yes, simulator | iOS Simulator or device; a device requires macOS and signing |
 
-### Platform-Specific Requirements
-*   **Linux (Desktop)**: `sudo apt-get install -y libgtk-3-dev ninja-build pkg-config cmake build-essential`
-*   **Windows (Desktop)**: Visual Studio 2022 with the "Desktop development with C++" workload installed.
-*   **macOS / iOS**: Xcode and CocoaPods.
-*   **Android**: Android Studio with the Android SDK and NDK installed (Cargokit will attempt to automatically locate or download the required NDK version).
+CI builds check that the native project and Rust FFI compile for each target. They do not replace testing on a physical device.
 
----
+## Quality, testing, and releases
 
-## 2. Project Structure
+Local quality checks and integration test commands are in the [Flutter guide](app/flutter/README.md) and [testing documentation](testing/README.md). CI also checks that generated FRB bindings are up to date. Do not manually edit `frb_generated*` files or vendored code under `app/flutter/rust_builder/cargokit/`.
 
-The repository is organized using an advanced Multi-crate Workspace pattern:
-
-```text
-qi_flutter/
-├── app/
-│   └── flutter/                  # The main Flutter Application (Presentation Layer)
-│       ├── lib/                  # Dart UI code and state management
-│       ├── integration_test/     # Native E2E tests (Patrol)
-│       └── rust_builder/         # Cargokit plugin linking the Rust workspace to Flutter
-├── rust/                         # The Rust Workspace (Logic Layer)
-│   ├── Cargo.toml                # Workspace manifest
-│   └── crates/
-│       ├── qi_core/              # Pure Rust business logic, state, platform access. (Zero Flutter knowledge)
-│       └── rust_lib_qi_flutter/  # FFI Bridge crate. Exposes `qi_core` to Dart via flutter_rust_bridge.
-├── design/                       # Design-system workspace (Penpot/Figma), empty until a design exists
-├── scripts/                      # Utility scripts (e.g. rename_project.py for new projects)
-├── testing/                      # Test runner configurations and documentation
-├── AGENTS.md                     # AI System Knowledge Base, Milestones & Migration Rules
-└── README.md                     # This file
-```
-
----
-
-## 3. How to Run
-
-> **Important:** Because the Flutter project is nested inside the repository to keep the root clean, you must always navigate to `app/flutter` before running any Flutter commands!
-
-### Step 1: Navigate to the app directory
-```bash
-cd app/flutter
-```
-
-### Step 2: Run on your target platform
-You can use VS Code's built-in run/debug tools (F5) by selecting your device in the bottom right corner, or use the terminal:
-
-*   **Android (Physical device or Emulator)**
-    ```bash
-    flutter run -d android
-    # Or specify device ID if multiple are connected: flutter run -d "Pixel 3a"
-    ```
-*   **Linux Desktop**
-    ```bash
-    flutter run -d linux
-    ```
-*   **Windows Desktop**
-    ```bash
-    flutter run -d windows
-    ```
-*   **macOS Desktop**
-    ```bash
-    flutter run -d macos
-    ```
-*   **iOS (Simulator or physical device)**
-    ```bash
-    flutter run -d ios
-    ```
-
-*Note: The very first time you build for a new target (especially Android or iOS), the build process will take several minutes. This is because Cargokit must download the appropriate cross-compilation toolchains (`rustup target add...`) and compile the entire Rust logic layer from scratch.*
-
-> **Note on Android Compilation:** This template currently uses Android Gradle Plugin (AGP) 8.11.1, Kotlin 2.2.20, and Gradle 9.1.0. AGP remains on 8.x until the Flutter SDK and all Android-facing plugins support AGP 9 and built-in Kotlin. For the current configuration, migration criteria, and validation matrix, see [`app/flutter/ANDROID_AGP9_MIGRATION.md`](app/flutter/ANDROID_AGP9_MIGRATION.md).
-
-
----
-
-## 4. AI Tools
-
-See [AI_TOOLS_HELPERS.md](AI_TOOLS_HELPERS.md) for the complete English and Polish reference of all AI roles and skills, including portable invocation examples for Gemini, GitHub Copilot, and Claude Code.
+Agent rules and architecture are documented in [AGENTS.md](AGENTS.md). The branching and release strategy is in [RELEASES_AND_BRANCHING.md](RELEASES_AND_BRANCHING.md), and the Android Gradle Plugin policy is in [ANDROID_AGP9_MIGRATION.md](app/flutter/ANDROID_AGP9_MIGRATION.md).
