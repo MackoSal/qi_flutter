@@ -20,7 +20,7 @@ Do not develop product-specific logic in the template repository. A separate rep
 
 ## 3. Preview the changes first
 
-The script changes occurrences of the old name in tracked project text files, updates example `com.example` identifiers, moves Android `MainActivity.kt` to the directory matching the new application ID, and renames paths containing the project name. It skips vendored Cargokit and build directories.
+The script changes occurrences of the old name in tracked project text files, updates example `com.example` identifiers, moves Android `MainActivity.kt` to the directory matching the new application ID, and renames paths containing the project name. It skips vendored Cargokit, build directories, and its own regression tests under `scripts/tests/`.
 
 Start with a preview:
 
@@ -61,6 +61,8 @@ rg -n 'qi_flutter|com\.example' --glob '!app/flutter/rust_builder/cargokit/**' .
 Results may include the script itself, migration history, or documentation references explaining the template. Before considering the rename complete, check the Android/iOS/macOS/Linux/Windows configuration and Dart/Rust imports in particular.
 
 Run the quality checks in the [guide](../app/flutter/README.md), then build for your platform. On Android, start with `flutter build apk --debug`; on Linux, `flutter build linux --debug`; on Windows, `flutter build windows --debug`; on macOS, `flutter build macos --debug`. For iOS, use macOS and `flutter build ios --simulator --no-codesign`.
+
+The required native CI builds cover Linux and Android. The iOS Simulator build is optional and non-blocking; Windows and macOS builds are local checks and are currently disabled in CI. See the [platform verification matrix](../testing/README.md#platform-matrix-and-local-requirements) before treating a target as CI-verified.
 
 ## 6. Set product details
 

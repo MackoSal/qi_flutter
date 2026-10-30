@@ -12,15 +12,16 @@ The repository includes a working `greet` demo. Use it as an example of the Flut
 
 ## Platforms
 
-| Platform | Built in CI | Run/device testing |
-| --- | --- | --- |
-| Linux | Yes | Locally on Linux |
-| Windows | Yes | Locally on Windows |
-| macOS | Yes | Locally on macOS |
-| Android | Yes | Android emulator or device |
-| iOS | Yes, simulator | iOS Simulator or device; a device requires macOS and signing |
+| Platform | Flutter project | CI verification | Run/device testing |
+| --- | --- | --- | --- |
+| Linux | Yes | Required build | Locally on Linux |
+| Android | Yes | Required build | Android emulator or device |
+| iOS | Yes | Optional iOS Simulator build; a failure does not block later CI jobs | iOS Simulator or device; a device requires macOS and signing |
+| Windows | Yes | CI build disabled | Locally on Windows with Visual Studio C++ tools |
+| macOS | Yes | CI build disabled | Locally on macOS with Xcode |
+| Web | No | Not supported | Not supported |
 
-CI builds check that the native project and Rust FFI compile for each target. They do not replace testing on a physical device.
+Windows and macOS targets remain in the Flutter project, but CI does not build them. Their matrix entries and build steps are commented out in `.github/workflows/ci-cd.yml`. CI requires Linux and Android native builds; the iOS Simulator build is informational and non-blocking. CI builds do not replace testing on physical devices.
 
 ## Quality, testing, and releases
 

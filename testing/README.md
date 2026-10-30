@@ -20,9 +20,19 @@ flutter test
 
 CI runs these checks and verifies that FRB code generation does not change the committed bindings.
 
+Run the project-rename regression tests from the repository root:
+
+```bash
+python3 -m unittest discover -s scripts/tests -v
+```
+
+These tests use temporary Git repositories and do not rename the current checkout.
+
 ## What CI checks for each target
 
-The workflow builds the application and Rust FFI library for Linux, Windows, macOS, Android, and the iOS Simulator. A CI build confirms that the native target compiles; it does not confirm behavior on every device model or vendor configuration.
+Rust, Flutter, FRB binding, and rename-helper checks are required. The native build matrix requires Linux and Android. The iOS Simulator build is optional: its result remains visible, but a failure does not fail the workflow or block dependent release jobs. Windows and macOS builds are currently disabled in CI; their Flutter project files and local build instructions remain available.
+
+A successful CI build confirms that the native target compiles; it does not confirm behavior on every device model or vendor configuration.
 
 ## Device integration tests
 
@@ -35,12 +45,13 @@ Patrol does not support Linux or Windows desktop. Use the first Flutter integrat
 
 ## Platform matrix and local requirements
 
-| Platform | CI build | Local build / runtime test |
+| Platform | CI verification | Local build / runtime test |
 | --- | --- | --- |
-| Linux | Yes | Linux with GTK 3, CMake, Ninja, pkg-config, and a C/C++ compiler |
-| Windows | Yes | Windows and Visual Studio 2022 with the C++ workload |
-| macOS | Yes | macOS and Xcode |
-| Android | Yes | Android SDK/NDK; emulator or device to run |
-| iOS | Yes, Simulator target | macOS and Xcode; a physical device requires signing setup |
+| Linux | Required build | Linux with GTK 3, CMake, Ninja, pkg-config, and a C/C++ compiler |
+| Android | Required build | Android SDK/NDK; emulator or device to run |
+| iOS | Optional, non-blocking Simulator build | macOS and Xcode; a physical device requires signing setup |
+| Windows | Build disabled in CI | Windows and Visual Studio 2022 with the C++ workload |
+| macOS | Build disabled in CI | macOS and Xcode |
+| Web | Not supported | Not supported |
 
-A build and a runtime test are separate steps. After a successful build, run the application or integration test on a locally available device if the change affects native behavior.
+A build and a runtime test are separate steps. After a successful build, run the application or integration test on a locally available device if the change affects native behavior. To restore Windows/macOS CI builds or disable the optional iOS build, edit the native-build matrix and matching steps in `.github/workflows/ci-cd.yml`.

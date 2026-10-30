@@ -81,10 +81,94 @@ jobs:
         working-directory: app/flutter
         run: flutter_rust_bridge_codegen generate
       - name: Check Generated Bindings
-        run: git diff --ignore-all-space --ignore-blank-lines --exit-code -- app/flutter/lib/src/rust
+        run: git diff --ignore-all-space --ignore-blank-lines --exit-code -- app/flutter/lib/src/rust rust/crates/rust_lib_qi_flutter/src/frb_generated.rs
+
+  rename-script-checks:
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test project rename helper
+        run: python3 -m unittest discover -s scripts/tests -v
+
+  native-builds:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.runner }}
+    # iOS Simulator is best-effort: failures remain visible but do not fail
+    # the workflow or block jobs that depend on native-builds.
+    continue-on-error: ${{ matrix.target == 'ios-simulator' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux
+            runner: ubuntu-24.04
+          # Windows builds are currently disabled; uncomment to restore CI coverage.
+          # - target: windows
+          #   runner: windows-2022
+          # macOS builds are currently disabled; uncomment to restore CI coverage.
+          # - target: macos
+          #   runner: macos-15
+          - target: android
+            runner: ubuntu-24.04
+          # Optional, non-blocking iOS Simulator build. Comment out this matrix entry
+          # to disable it; the platform project and local build instructions remain.
+          - target: ios-simulator
+            runner: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Linux Dependencies
+        if: matrix.target == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev ninja-build pkg-config cmake build-essential
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Flutter Dependencies
+        working-directory: app/flutter
+        run: flutter pub get
+
+      - name: Install Cargokit Build Tool Dependencies
+        working-directory: app/flutter/rust_builder/cargokit/build_tool
+        run: dart pub get
+
+      - name: Build Linux
+        if: matrix.target == 'linux'
+        working-directory: app/flutter
+        run: flutter build linux --debug
+
+      # Windows CI build is disabled; uncomment this step and its matrix entry above to restore it.
+      # - name: Build Windows
+      #   if: matrix.target == 'windows'
+      #   working-directory: app/flutter
+      #   run: flutter build windows --debug
+
+      # macOS CI build is disabled; uncomment this step and its matrix entry above to restore it.
+      # - name: Build macOS
+      #   if: matrix.target == 'macos'
+      #   working-directory: app/flutter
+      #   run: flutter build macos --debug
+
+      - name: Build Android
+        if: matrix.target == 'android'
+        working-directory: app/flutter
+        run: flutter build apk --debug
+
+      - name: Build iOS Simulator
+        if: matrix.target == 'ios-simulator'
+        working-directory: app/flutter
+        run: flutter build ios --simulator --no-codesign
 
   build-and-release:
-    needs: [rust-checks, flutter-checks, frb-codegen-check]
+    needs: [rust-checks, flutter-checks, frb-codegen-check, rename-script-checks, native-builds]
     runs-on: ubuntu-26.04
     strategy:
       matrix:

@@ -1,51 +1,159 @@
 #!/usr/bin/env python3
-import os
+"""Rename a qi_flutter template checkout and set its native application ID."""
+
+from __future__ import annotations
+
+import argparse
+import re
+import subprocess
 import sys
+from pathlib import Path
 
-def replace_in_file(filepath, old_str, new_str):
+
+ROOT = Path(__file__).resolve().parents[1]
+SKIP_PARTS = {".git", ".dart_tool", "build", "target", "Outputs"}
+VENDORED_PARTS = {"cargokit"}
+
+
+def project_files() -> list[Path]:
+    """Return tracked text-file candidates, excluding vendored build tooling."""
+    result = subprocess.run(
+        ["git", "ls-files", "-z"], cwd=ROOT, check=True, capture_output=True
+    )
+    paths = []
+    for item in result.stdout.decode().split("\0"):
+        if not item:
+            continue
+        path = Path(item)
+        if SKIP_PARTS.intersection(path.parts) or VENDORED_PARTS.intersection(path.parts):
+            continue
+        if path.parts[:2] == ("scripts", "tests"):
+            continue
+        absolute = ROOT / path
+        if absolute.is_file():
+            paths.append(path)
+    return paths
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Rename the template's project/package names and native app ID."
+    )
+    parser.add_argument("old_name", help="Current project name, usually qi_flutter")
+    parser.add_argument("new_name", help="New Dart/Rust crate name, e.g. qi_wellness")
+    parser.add_argument(
+        "--application-id",
+        required=True,
+        help="Unique reverse-DNS ID, e.g. pl.example.qiwellness",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show planned edits without writing files"
+    )
+    args = parser.parse_args()
+
+    if not re.fullmatch(r"[a-z][a-z0-9_]*", args.old_name):
+        parser.error("old_name must be a lowercase Dart/Rust name, e.g. qi_flutter")
+    if not re.fullmatch(r"[a-z][a-z0-9_]*", args.new_name):
+        parser.error("new_name must be a lowercase Dart/Rust name, e.g. qi_wellness")
+    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+", args.application_id):
+        parser.error("--application-id must be a reverse-DNS ID, e.g. pl.example.app")
+    if args.old_name == args.new_name:
+        parser.error("old_name and new_name must be different")
+
     try:
-        with open(filepath, 'r', encoding='utf-8') as file:
-            content = file.read()
-            
-        if old_str in content:
-            content = content.replace(old_str, new_str)
-            with open(filepath, 'w', encoding='utf-8') as file:
-                file.write(content)
-            print(f"Updated: {filepath}")
-    except Exception as e:
-        print(f"Could not read/write {filepath}: {e}")
+        paths = project_files()
+    except (FileNotFoundError, subprocess.CalledProcessError) as error:
+        print(f"Could not list tracked project files: {error}", file=sys.stderr)
+        return 1
 
-def main():
-    if len(sys.argv) != 3:
-        print("Usage: python rename_project.py <old_name> <new_name>")
-        print("Example: python rename_project.py qi_flutter awesome_app")
-        sys.exit(1)
+    edits: list[tuple[Path, bytes]] = []
+    moves: list[tuple[Path, Path]] = []
+    moved_directories: set[Path] = set()
+    for relative in paths:
+        if relative == Path("scripts/rename_project.py"):
+            continue
+        source = ROOT / relative
+        try:
+            original = source.read_bytes()
+            text = original.decode("utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
 
-    old_name = sys.argv[1]
-    new_name = sys.argv[2]
-    
-    # Define directories to scan (avoiding hidden dirs and target/build folders)
-    scan_dirs = ['.github', 'app/flutter', 'rust', 'design', 'testing', 'scripts']
-    root_files = ['README.md', 'AGENTS.md', 'GEMINI.md', 'RELEASES_AND_BRANCHING.md']
+        app_id_token = "__TEMPLATE_APPLICATION_ID__"
+        updated = text.replace("com.example.qi_flutter", app_id_token)
+        updated = updated.replace("com.example.qiFlutter", app_id_token)
+        updated = updated.replace("com.example", app_id_token)
+        updated = updated.replace(args.old_name, args.new_name)
+        updated = updated.replace(app_id_token, args.application_id)
+        encoded = updated.encode("utf-8")
+        if encoded != original:
+            edits.append((relative, encoded))
 
-    for d in scan_dirs:
-        for root, dirs, files in os.walk(d):
-            # Skip build/target/hidden directories
-            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['build', 'target', '.dart_tool', 'Outputs']]
-            
-            for file in files:
-                if not file.startswith('.'):
-                    filepath = os.path.join(root, file)
-                    replace_in_file(filepath, old_name, new_name)
+        bridge_dir = Path("rust/crates") / f"rust_lib_{args.old_name}"
+        if bridge_dir in relative.parents:
+            if bridge_dir not in moved_directories:
+                moves.append((bridge_dir, Path("rust/crates") / f"rust_lib_{args.new_name}"))
+                moved_directories.add(bridge_dir)
+            continue
 
-    for file in root_files:
-        if os.path.exists(file):
-            replace_in_file(file, old_name, new_name)
-            
-    print("\nText replacement complete!")
-    print(f"NOTE: You may still need to manually rename the Android package (com.example.{old_name})")
-    print("and run `flutter clean` & `flutter pub get`.")
+        kotlin_dir = Path("app/flutter/android/app/src/main/kotlin/com/example") / args.old_name
+        if kotlin_dir in relative.parents:
+            if kotlin_dir not in moved_directories:
+                target_dir = Path("app/flutter/android/app/src/main/kotlin") / Path(
+                    *args.application_id.split(".")
+                )
+                moves.append((kotlin_dir, target_dir))
+                moved_directories.add(kotlin_dir)
+            continue
 
-if __name__ == '__main__':
-    main()
+        renamed = Path(str(relative).replace(args.old_name, args.new_name))
+        if renamed != relative:
+            moves.append((relative, renamed))
 
+    print(f"Project name: {args.old_name} -> {args.new_name}")
+    print(f"Native application ID: -> {args.application_id}")
+    print(f"Text files to update: {len(edits)}")
+    print(f"Paths to move: {len(moves)}")
+    if args.dry_run:
+        for relative, _ in edits:
+            print(f"  edit {relative}")
+        for old_path, new_path in moves:
+            print(f"  move {old_path} -> {new_path}")
+        return 0
+
+    conflicts = [
+        new_path
+        for old_path, new_path in moves
+        if old_path != new_path and (ROOT / new_path).exists()
+    ]
+    if conflicts:
+        print(
+            "Refusing to overwrite existing paths: "
+            + ", ".join(path.as_posix() for path in conflicts),
+            file=sys.stderr,
+        )
+        return 1
+
+    for relative, content in edits:
+        (ROOT / relative).write_bytes(content)
+    for old_path, new_path in moves:
+        source = ROOT / old_path
+        destination = ROOT / new_path
+        if not source.exists():
+            continue
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        source.rename(destination)
+
+    kotlin_parent = ROOT / "app/flutter/android/app/src/main/kotlin/com/example"
+    for directory in (kotlin_parent, kotlin_parent.parent):
+        try:
+            directory.rmdir()
+        except OSError:
+            break
+
+    print("Rename complete. Next: flutter clean, flutter pub get, then regenerate FRB bindings.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

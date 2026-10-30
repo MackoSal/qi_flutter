@@ -30,7 +30,7 @@ Resolve items marked as required by `flutter doctor -v` for your target platform
 | macOS desktop / iOS | Xcode; CocoaPods is also needed for iOS |
 | Android | Android Studio, Android SDK, accepted SDK licenses; Cargokit uses the Android NDK and adds the required Rust targets |
 
-iOS and macOS local builds require a Mac. Android and Windows can be built on their respective operating systems or in CI.
+iOS and macOS local builds require a Mac. Android and Windows can be built on their respective operating systems. CI requires Linux and Android builds, attempts the iOS Simulator build as a non-blocking check, and currently skips Windows and macOS builds.
 
 ## 3. Fetch dependencies
 
@@ -91,6 +91,12 @@ cd ../app/flutter
 dart format --set-exit-if-changed lib/ test/
 flutter analyze
 flutter test
+```
+
+From the repository root, also run the template rename helper checks:
+
+```bash
+python3 -m unittest discover -s scripts/tests -v
 ```
 
 Integration tests require an available target:

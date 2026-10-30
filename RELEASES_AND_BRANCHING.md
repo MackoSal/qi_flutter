@@ -17,7 +17,7 @@ We use a simplified **GitHub Flow** model. This is an ideal compromise between s
 
 The management of official releases for clients is automated thanks to GitHub Actions. To create an official installer downloadable from GitHub, you simply need to tag a commit following SemVer and push it to the server.
 
-### Standard Release (All Platforms)
+### Standard Release (Linux and Android)
 By default, pushing a full version tag compiles and uploads packages for both **Android** and **Linux**.
 
 ```bash

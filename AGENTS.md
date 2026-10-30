@@ -8,7 +8,7 @@ This repository is a reusable template for fully native applications built with 
 
 ## 2. Platform Constraints
 
-- **Supported targets:** desktop (Linux, Windows, macOS) and mobile (Android, iOS).
+- **Native project targets:** Linux, Windows, macOS, Android, and iOS. CI-required builds cover Linux and Android. The iOS Simulator build is optional and non-blocking; Windows and macOS builds are currently commented out in CI. Local build guidance remains in `app/flutter/README.md`.
 - **The Web platform is not supported.** Do not add a `web/` target, Web-only packages, or Web-based testing tools.
 - **No WebSocket or local server architecture.** Flutter and Rust communicate only through in-memory FFI.
 
@@ -80,10 +80,11 @@ git config core.hooksPath .githooks
 | Dart formatting | `dart format --set-exit-if-changed lib/ test/` (`app/flutter/`) |
 | Dart analysis | `flutter analyze` (`app/flutter/`) |
 | Flutter tests | `flutter test` (`app/flutter/`) |
-| Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent) |
+| Rename script tests | `python3 -m unittest discover -s scripts/tests -v` (repository root) |
+| Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent; CI requires Linux/Android, iOS is optional) |
 | Integration tests | `patrol test` (`app/flutter/`, requires a device, see `testing/README.md`) |
 
-CI runs the Rust and Flutter checks, verifies generated FRB bindings, and builds Linux, Windows, macOS, Android, and the iOS Simulator target. Device execution and Patrol tests still require a local device/emulator.
+CI runs the Rust and Flutter checks, verifies generated FRB bindings, tests the rename helper, and requires Linux and Android builds. The iOS Simulator build is best-effort and does not block later jobs; Windows and macOS builds are disabled in CI. Device execution and Patrol tests still require a local device/emulator.
 
 ### Documentation layout
 

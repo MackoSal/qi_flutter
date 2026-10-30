@@ -77,6 +77,16 @@ if [ -f "app/flutter/pubspec.yaml" ]; then
   fi
 fi
 
+# ── Template helper checks ────────────────────────────────
+if [ -d "scripts/tests" ]; then
+  step "python3 -m unittest discover -s scripts/tests -v"
+  if python3 -m unittest discover -s scripts/tests -v 2>&1; then
+    pass "Project rename tests"
+  else
+    fail "Project rename tests — fix scripts/tests/"
+  fi
+fi
+
 # ── Result ───────────────────────────────────────────────
 echo ""
 if [ "$errors" -gt 0 ]; then
