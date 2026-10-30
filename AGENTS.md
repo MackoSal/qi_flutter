@@ -56,6 +56,14 @@ The FRB version must stay identical in `rust/crates/rust_lib_qi_flutter/Cargo.to
 - For commits in this repository, use `Maciej Salwa <macieks1515@wp.pl>`, matching the repository owner's existing commit history. Never use `maciej.salwa.ext@qorix.ai` for this repository.
 - Before creating or amending a commit, verify the repository-local identity with `git config --local user.name` and `git config --local user.email`.
 
+### Commit and push policy
+
+- Use a short, single-line Conventional Commit subject: `type(scope): imperative summary`. The scope is optional when the type makes the change clear; for example, `docs: clarify setup` or `fix(rename): validate identifiers`.
+- Choose the subject from the staged diff and repository context. It must accurately describe the change contained in the commit and make sense as a durable entry in the project history, without relying on this chat, the reason a change was requested, or an earlier mistaken state unless that correction is itself visible in the diff.
+- Do not push commits or tags unless the user explicitly asks for the push.
+
+For detailed commit-subject guidance, see [`.claude/skills/commit-message/SKILL.md`](.claude/skills/commit-message/SKILL.md).
+
 ### Quality gates
 
 The pre-commit hook (`.githooks/pre-commit`) runs the local Rust and Flutter quality checks that CI also runs. CI adds FRB binding verification, dependency auditing, and native target builds. Enable the hook once per clone:
