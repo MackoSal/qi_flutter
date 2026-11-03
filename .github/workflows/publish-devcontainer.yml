@@ -23,7 +23,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build and test toolchain image
         run: |
           docker build --file .devcontainer/Dockerfile --tag qi_flutter-devcontainer:test .
