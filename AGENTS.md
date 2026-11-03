@@ -8,7 +8,7 @@ This repository is a reusable template for fully native applications built with 
 
 ## 2. Platform Constraints
 
-- **Native project targets:** Linux, Windows, macOS, Android, and iOS. CI-required builds cover Linux and Android. The iOS Simulator build is optional and non-blocking; Windows and macOS builds are currently commented out in CI. Local build guidance remains in `app/flutter/README.md`.
+- **Native project targets:** Linux, Windows, macOS, Android, and iOS. CI-required builds cover Linux and arm64 Android. The iOS Simulator build is optional and non-blocking; Windows and macOS currently have no CI jobs. Their builds need dedicated host jobs outside the Linux container. Local build guidance remains in `app/flutter/README.md`.
 - **The Web platform is not supported.** Do not add a `web/` target, Web-only packages, or Web-based testing tools.
 - **No WebSocket or local server architecture.** Flutter and Rust communicate only through in-memory FFI.
 
@@ -25,7 +25,7 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  rust_lib_qi_
   - Thin FFI adapter built with **flutter_rust_bridge (FRB) v2**. Public functions in `src/api/` are exposed to Dart.
   - Converts between FFI-friendly types and `qi_core` types. It must not contain business logic.
 - **Core layer - `rust/crates/qi_core/`:**
-  - Pure Rust domain logic, state, calculations, and platform or hardware access.
+  - Pure Rust domain rules, state, and calculations. Keep operating-system, hardware, and external I/O behind explicit adapters so core behavior remains easy to test.
   - Has **no dependency on Flutter or FRB** and must be testable with plain `cargo test`.
 - **Native build glue - `app/flutter/rust_builder/`:**
   - Cargokit plugin that compiles the Rust workspace for every Flutter target. Treat `cargokit/` as vendored code.
@@ -43,8 +43,9 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  rust_lib_qi_
    ```
 
 4. Commit the regenerated files. Never edit `frb_generated*.dart`, `frb_generated.rs`, or other `@generated` files by hand; CI fails if the committed bindings differ from a fresh generation.
+5. FRB currently generates a web-specific binding file even though Web is not a supported application target. Keep it in sync with codegen; its presence does not add Web support.
 
-The FRB version must stay identical in `rust/crates/rust_lib_qi_flutter/Cargo.toml`, `app/flutter/pubspec.yaml`, and `.github/workflows/ci-cd.yml`.
+The FRB version must stay identical in `rust/crates/rust_lib_qi_flutter/Cargo.toml`, `app/flutter/pubspec.yaml`, and `.devcontainer/Dockerfile`.
 
 ### Documentation language
 
@@ -81,10 +82,10 @@ git config core.hooksPath .githooks
 | Dart analysis | `flutter analyze` (`app/flutter/`) |
 | Flutter tests | `flutter test` (`app/flutter/`) |
 | Rename script tests | `python3 -m unittest discover -s scripts/tests -v` (repository root) |
-| Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent; CI requires Linux/Android, iOS is optional) |
+| Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk --profile --target-platform android-arm64`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent; CI requires Linux and arm64 Android, iOS is optional) |
 | Integration tests | `patrol test` (`app/flutter/`, requires a device, see `testing/README.md`) |
 
-CI runs the Rust and Flutter checks, verifies generated FRB bindings, tests the rename helper, and requires Linux and Android builds. The iOS Simulator build is best-effort and does not block later jobs; Windows and macOS builds are disabled in CI. Device execution and Patrol tests still require a local device/emulator.
+CI runs Linux jobs in the pinned public GHCR toolchain image, verifies generated FRB bindings, tests the rename helper against a repository fixture, and requires Linux and arm64 Android builds. Tagged Android releases build all four configured ABIs. The release job only runs for tags. The optional iOS Simulator build runs on macOS outside the container and does not block later jobs; Windows and macOS app builds are disabled in CI. Device execution and Patrol tests still require a local device/emulator. Android CI uploads disk-usage diagnostics even if its build fails.
 
 ### Documentation layout
 
@@ -95,14 +96,16 @@ CI runs the Rust and Flutter checks, verifies generated FRB bindings, tests the 
 - `RELEASES_AND_BRANCHING.md` - branching model and tag-driven releases.
 - `app/flutter/ANDROID_AGP9_MIGRATION.md` - Android Gradle Plugin version policy.
 - `testing/README.md` - local checks, CI target builds, and device testing.
+- `docs/DEVELOPMENT_CONTAINER.md` - shared GHCR toolchain image and Dev Container setup.
+- `CONTRIBUTING.md` and `SECURITY.md` - contribution and vulnerability reporting guidance.
 - `design/` - design-system workspace (no design has been created yet).
 - `AI_TOOLS_HELPERS.md` - AI roles and skills under `.gemini/`.
 
 ## 5. Development Environment
 
-- Required tools: `rustc`, `cargo`, `flutter`, `dart`, and `flutter_rust_bridge_codegen` (the version pinned in CI).
+- Required tools: `rustc`, `cargo`, `flutter`, `dart`, and `flutter_rust_bridge_codegen` (versions are pinned in `.devcontainer/Dockerfile`). The recommended Dev Container uses the same toolchain as Linux CI.
 - Linux desktop dependencies: `libgtk-3-dev`, `cmake`, `ninja-build`, `pkg-config`, and C++ development libraries.
-- Android builds require the Android SDK and NDK; Cargokit installs the required Rust targets.
+- Android builds require the Android SDK and NDK; the shared toolchain image contains the pinned SDK, NDK, and required Rust targets.
 - A Dev Container is recommended to standardize the environment and avoid local system package conflicts.
 
 ## 6. Creating a New Project from This Template

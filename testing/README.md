@@ -30,7 +30,11 @@ These tests use temporary Git repositories and do not rename the current checkou
 
 ## What CI checks for each target
 
-Rust, Flutter, FRB binding, and rename-helper checks are required. The native build matrix requires Linux and Android. The iOS Simulator build is optional: its result remains visible, but a failure does not fail the workflow or block dependent release jobs. Windows and macOS builds are currently disabled in CI; their Flutter project files and local build instructions remain available.
+Rust, Flutter, FRB binding, and rename-helper checks are required. The native build matrix requires Linux and Android. The Android PR check builds a profile APK for arm64 and verifies its ABI contents. Tagged Android releases build the four configured Android ABIs. The iOS Simulator build is optional: its result remains visible, but a failure does not fail the workflow or block dependent release jobs. Windows and macOS builds are currently disabled in CI; their Flutter project files and local build instructions remain available.
+
+All Linux CI jobs and the VS Code Dev Container use the public GHCR toolchain image. See [Development container](../docs/DEVELOPMENT_CONTAINER.md) for the pinned versions and setup. iOS continues to use a macOS runner because it requires Xcode.
+
+The Android build job records free disk space and the size of major SDK, NDK, Rust, Gradle, and build directories before and after the build. It uploads this report even if the build fails. Compare these measurements before adding or expanding CI caches; caching whole build directories can consume runner space and hide the actual source of pressure.
 
 A successful CI build confirms that the native target compiles; it does not confirm behavior on every device model or vendor configuration.
 
@@ -54,4 +58,4 @@ Patrol does not support Linux or Windows desktop. Use the first Flutter integrat
 | macOS | Build disabled in CI | macOS and Xcode |
 | Web | Not supported | Not supported |
 
-A build and a runtime test are separate steps. After a successful build, run the application or integration test on a locally available device if the change affects native behavior. To restore Windows/macOS CI builds or disable the optional iOS build, edit the native-build matrix and matching steps in `.github/workflows/ci-cd.yml`.
+A build and a runtime test are separate steps. After a successful build, run the application or integration test on a locally available device if the change affects native behavior. To restore Windows/macOS CI builds, add dedicated native host jobs outside the Linux container. To disable the optional iOS build, edit the `native-ios` job in `.github/workflows/ci-cd.yml`.

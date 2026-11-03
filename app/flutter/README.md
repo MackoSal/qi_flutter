@@ -10,6 +10,8 @@ Install the Flutter SDK (which includes Dart), Rust using rustup, and Git. You a
 cargo install flutter_rust_bridge_codegen --version 2.13.0
 ```
 
+For a preconfigured Flutter, Rust, and Android environment, use the [repository Dev Container](../../docs/DEVELOPMENT_CONTAINER.md). Local host setup remains supported.
+
 Check your installation:
 
 ```bash
@@ -30,7 +32,7 @@ Resolve items marked as required by `flutter doctor -v` for your target platform
 | macOS desktop / iOS | Xcode; CocoaPods is also needed for iOS |
 | Android | Android Studio, Android SDK, accepted SDK licenses; Cargokit uses the Android NDK and adds the required Rust targets |
 
-iOS and macOS local builds require a Mac. Android and Windows can be built on their respective operating systems. CI requires Linux and Android builds, attempts the iOS Simulator build as a non-blocking check, and currently skips Windows and macOS builds.
+iOS and macOS local builds require a Mac. Android and Windows can be built on their respective operating systems. CI requires Linux and an arm64 Android profile build; tagged Android releases build all four configured ABIs. The iOS Simulator build is a non-blocking check, and CI currently skips Windows and macOS builds.
 
 ## 3. Fetch dependencies
 

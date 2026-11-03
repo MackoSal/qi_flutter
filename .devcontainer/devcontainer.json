@@ -1,0 +1,19 @@
+{
+  "name": "qi_flutter Flutter + Rust",
+  "image": "ghcr.io/mackosal/qi_flutter-devcontainer:1",
+  "remoteUser": "ubuntu",
+  "containerEnv": {
+    "ANDROID_HOME": "/opt/android-sdk",
+    "ANDROID_SDK_ROOT": "/opt/android-sdk"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dart-code.dart-code",
+        "dart-code.flutter",
+        "rust-lang.rust-analyzer"
+      ]
+    }
+  },
+  "postCreateCommand": "cd app/flutter && flutter doctor -v && flutter pub get && cd rust_builder/cargokit/build_tool && dart pub get"
+}

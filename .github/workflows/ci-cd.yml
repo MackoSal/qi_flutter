@@ -7,15 +7,16 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: read
+
 jobs:
   rust-checks:
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/mackosal/qi_flutter-devcontainer:1
     steps:
       - uses: actions/checkout@v4
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -29,21 +30,16 @@ jobs:
       - name: Unit Tests
         working-directory: rust
         run: cargo test --workspace
-      - name: Install cargo-audit
-        run: cargo install cargo-audit --locked
       - name: Security Audit
         working-directory: rust
         run: cargo audit
 
   flutter-checks:
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/mackosal/qi_flutter-devcontainer:1
     steps:
       - uses: actions/checkout@v4
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
       - name: Install Dependencies
         working-directory: app/flutter
         run: flutter pub get
@@ -61,22 +57,15 @@ jobs:
         run: flutter test
 
   frb-codegen-check:
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/mackosal/qi_flutter-devcontainer:1
     steps:
       - uses: actions/checkout@v4
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: "rust"
-      - name: Install flutter_rust_bridge_codegen
-        run: cargo install flutter_rust_bridge_codegen --version 2.13.0
       - name: Generate FRB Bindings
         working-directory: app/flutter
         run: flutter_rust_bridge_codegen generate
@@ -84,53 +73,27 @@ jobs:
         run: git diff --ignore-all-space --ignore-blank-lines --exit-code -- app/flutter/lib/src/rust rust/crates/rust_lib_qi_flutter/src/frb_generated.rs
 
   rename-script-checks:
-    runs-on: ubuntu-26.04
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/mackosal/qi_flutter-devcontainer:1
     steps:
       - uses: actions/checkout@v4
       - name: Test project rename helper
         run: python3 -m unittest discover -s scripts/tests -v
 
-  native-builds:
+  native-linux-android:
     name: Build ${{ matrix.target }}
-    runs-on: ${{ matrix.runner }}
-    # iOS Simulator is best-effort: failures remain visible but do not fail
-    # the workflow or block jobs that depend on native-builds.
-    continue-on-error: ${{ matrix.target == 'ios-simulator' }}
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/mackosal/qi_flutter-devcontainer:1
     strategy:
       fail-fast: false
       matrix:
         include:
           - target: linux
-            runner: ubuntu-24.04
-          # Windows builds are currently disabled; uncomment to restore CI coverage.
-          # - target: windows
-          #   runner: windows-2022
-          # macOS builds are currently disabled; uncomment to restore CI coverage.
-          # - target: macos
-          #   runner: macos-15
           - target: android
-            runner: ubuntu-24.04
-          # Optional, non-blocking iOS Simulator build. Comment out this matrix entry
-          # to disable it; the platform project and local build instructions remain.
-          - target: ios-simulator
-            runner: macos-15
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install Linux Dependencies
-        if: matrix.target == 'linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev ninja-build pkg-config cmake build-essential
-
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
 
       - name: Install Flutter Dependencies
         working-directory: app/flutter
@@ -145,31 +108,91 @@ jobs:
         working-directory: app/flutter
         run: flutter build linux --debug
 
-      # Windows CI build is disabled; uncomment this step and its matrix entry above to restore it.
-      # - name: Build Windows
-      #   if: matrix.target == 'windows'
-      #   working-directory: app/flutter
-      #   run: flutter build windows --debug
-
-      # macOS CI build is disabled; uncomment this step and its matrix entry above to restore it.
-      # - name: Build macOS
-      #   if: matrix.target == 'macos'
-      #   working-directory: app/flutter
-      #   run: flutter build macos --debug
+      - name: Report Android disk usage before build
+        if: matrix.target == 'android'
+        working-directory: app/flutter
+        run: |
+          report="$GITHUB_WORKSPACE/android-disk-report.txt"
+          {
+            echo '## Disk space before build'
+            df -h
+            echo '## Major toolchain/build directories before build'
+            for path in /opt/android-sdk "$HOME/.gradle/caches" /usr/local/cargo/registry /usr/local/rustup rust_builder/build build; do
+              if [ -e "$path" ]; then du -sh "$path" || true; fi
+            done
+          } 2>&1 | tee "$report"
 
       - name: Build Android
         if: matrix.target == 'android'
         working-directory: app/flutter
-        run: flutter build apk --debug
+        run: flutter build apk --profile --target-platform android-arm64
 
+      - name: Verify Android APK contains arm64 only
+        if: matrix.target == 'android'
+        working-directory: app/flutter
+        run: |
+          set -euo pipefail
+          apk=build/app/outputs/flutter-apk/app-profile.apk
+          test -f "$apk"
+          abis=$(unzip -Z1 "$apk" | sed -n 's#^lib/\([^/]*\)/.*#\1#p' | sort -u)
+          test "$abis" = "arm64-v8a"
+          printf 'Verified APK ABI: %s\n' "$abis"
+
+      - name: Report Android disk usage after build
+        if: always() && matrix.target == 'android'
+        working-directory: app/flutter
+        run: |
+          report="$GITHUB_WORKSPACE/android-disk-report.txt"
+          {
+            echo '## Disk space after build'
+            df -h
+            echo '## Major toolchain/build directories after build'
+            for path in /opt/android-sdk "$HOME/.gradle/caches" /usr/local/cargo/registry /usr/local/rustup rust_builder/build build; do
+              if [ -e "$path" ]; then du -sh "$path" || true; fi
+            done
+          } 2>&1 | tee -a "$report"
+
+      - name: Upload Android disk report
+        if: always() && matrix.target == 'android'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-disk-report
+          path: ${{ github.workspace }}/android-disk-report.txt
+          if-no-files-found: ignore
+
+  native-ios:
+    name: Build iOS Simulator (optional)
+    runs-on: macos-15
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.41.9
+          cache: true
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.94.1
+      - name: Install Flutter Dependencies
+        working-directory: app/flutter
+        run: flutter pub get
+      - name: Install Cargokit Build Tool Dependencies
+        working-directory: app/flutter/rust_builder/cargokit/build_tool
+        run: dart pub get
       - name: Build iOS Simulator
-        if: matrix.target == 'ios-simulator'
         working-directory: app/flutter
         run: flutter build ios --simulator --no-codesign
 
   build-and-release:
-    needs: [rust-checks, flutter-checks, frb-codegen-check, rename-script-checks, native-builds]
-    runs-on: ubuntu-26.04
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [rust-checks, flutter-checks, frb-codegen-check, rename-script-checks, native-linux-android, native-ios]
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/mackosal/qi_flutter-devcontainer:1
+    permissions:
+      contents: write
     strategy:
       matrix:
         target: [linux, android]
@@ -193,24 +216,14 @@ jobs:
           
           echo "should_build=$SHOULD_BUILD" >> $GITHUB_OUTPUT
       
-      - name: Install Linux Dependencies
-        if: steps.filter.outputs.should_build == 'true' && matrix.target == 'linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev ninja-build pkg-config cmake build-essential
-      
-      - name: Install Flutter
+      - name: Install Flutter Dependencies
         if: steps.filter.outputs.should_build == 'true'
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
-      
-      - name: Install Rust & NDK Targets
+        working-directory: app/flutter
+        run: flutter pub get
+      - name: Install Cargokit Build Tool Dependencies
         if: steps.filter.outputs.should_build == 'true'
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: "aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android,i686-linux-android"
+        working-directory: app/flutter/rust_builder/cargokit/build_tool
+        run: dart pub get
           
       - name: Build Linux
         if: steps.filter.outputs.should_build == 'true' && matrix.target == 'linux'
@@ -225,7 +238,7 @@ jobs:
       - name: Build Android
         if: steps.filter.outputs.should_build == 'true' && matrix.target == 'android'
         working-directory: app/flutter
-        run: flutter build apk --release
+        run: flutter build apk --release --target-platform android-arm,android-arm64,android-x64,android-x86
         
       - name: Move Android Build
         if: steps.filter.outputs.should_build == 'true' && matrix.target == 'android'
@@ -234,7 +247,7 @@ jobs:
 
       - name: Release to GitHub
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/') && steps.filter.outputs.should_build == 'true'
+        if: steps.filter.outputs.should_build == 'true'
         with:
           files: |
             qi_flutter_linux.tar.gz

@@ -41,6 +41,8 @@ rust/crates/qi_core/src/lib.rs                 Rust logic and unit test
 
 The current screen calls `greet(name: "Tom")`. This example shows the complete function-change cycle; you can keep it in the template or replace it with the first product feature.
 
+`greet` is intentionally a minimal synchronous happy-path example of the Flutter-to-Rust bridge. Add async behavior and domain error handling with the first feature that needs those patterns, so the template does not imply one policy for every product.
+
 1. **Change the logic in `rust/crates/qi_core/src/lib.rs`.** Add or modify a domain function. If its behavior changes, add a unit test next to the logic in a `#[cfg(test)]` block.
 2. **Run the Rust tests.** From `rust`, run `cargo test --workspace`. `qi_core` can be tested without starting Flutter.
 3. **Expose the logic through the adapter.** Add a function in `rust/crates/rust_lib_qi_flutter/src/api/` that calls `qi_core`. Keep product calculations and rules out of the adapter.

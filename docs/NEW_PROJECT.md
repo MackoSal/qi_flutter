@@ -69,5 +69,8 @@ The required native CI builds cover Linux and Android. The iOS Simulator build i
 - Set the display name, icon, bundle ID, and application ID for your product brand.
 - Configure release signing according to platform policy. The template uses debug signing for local Android release runs; configure your own key before distribution.
 - Customize the release workflow and GitHub Actions secrets. The template's default releases create a Linux archive and Android APK.
+- Choose and add a project license before redistributing the application. This template intentionally does not select a license on behalf of the product owner.
+- Update the Dev Container image path in `.devcontainer/devcontainer.json` and `.github/workflows/ci-cd.yml` to your lowercase GitHub owner/repository, publish the image from the new repository, and make its GHCR package public if collaborators need anonymous pulls.
+- Replace the `@MackoSal` entry in `.github/CODEOWNERS` with the GitHub account or team that will own the new repository.
 - Replace the quickstart screen and `greet` with the first product feature. Start with logic and tests in `qi_core`, then expose it through the FRB API.
 - Update the product README and the “Creating a New Project” section in its `AGENTS.md` to describe the product.

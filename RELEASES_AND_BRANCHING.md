@@ -17,6 +17,8 @@ We use a simplified **GitHub Flow** model. This is an ideal compromise between s
 
 The management of official releases for clients is automated thanks to GitHub Actions. To create an official installer downloadable from GitHub, you simply need to tag a commit following SemVer and push it to the server.
 
+Release builds run only for tags. Pull requests and regular pushes run the required native Linux and Android checks; they do not repeat the release-mode builds. The Android pull-request check builds a profile APK for `arm64-v8a`; tagged Android releases build all four configured ABIs (`armeabi-v7a`, `arm64-v8a`, `x86`, and `x86_64`).
+
 ### Standard Release (Linux and Android)
 By default, pushing a full version tag compiles and uploads packages for both **Android** and **Linux**.
 
@@ -41,3 +43,5 @@ If you found a minor visual bug on Android and there is no point in wasting CI s
   git push origin 1.0.1-l
   ```
   *(The pipeline will skip building Android and create a Release containing only the .tar.gz file)*
+
+The template's Android release build currently uses the debug signing configuration from `app/flutter/android/app/build.gradle.kts`. This is suitable for a template smoke release, not for publishing a production app. Configure a private upload key and CI signing secrets before distributing an app to users. Never commit signing keys or passwords.

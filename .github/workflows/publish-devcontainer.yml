@@ -1,0 +1,58 @@
+name: Dev Container Image
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+      - .devcontainer/Dockerfile
+      - .github/workflows/publish-devcontainer.yml
+  push:
+    branches: [ master ]
+    paths:
+      - .devcontainer/Dockerfile
+      - .github/workflows/publish-devcontainer.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and test toolchain image
+        run: |
+          docker build --file .devcontainer/Dockerfile --tag qi_flutter-devcontainer:test .
+          docker run --rm qi_flutter-devcontainer:test bash -lc '
+            flutter --version --machine >/tmp/flutter-version.json &&
+            rustc --version &&
+            flutter_rust_bridge_codegen --version &&
+            cargo audit --version &&
+            java -version &&
+            sdkmanager --version &&
+            test -d "$ANDROID_HOME/ndk/28.2.13676358" &&
+            test -d "$ANDROID_HOME/platforms/android-36"
+          '
+      - name: Log in to GHCR
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: Tag image
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          REPOSITORY="$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
+          IMAGE_NAME="ghcr.io/${REPOSITORY}-devcontainer"
+          docker tag qi_flutter-devcontainer:test "$IMAGE_NAME:1"
+          docker tag qi_flutter-devcontainer:test "$IMAGE_NAME:${GITHUB_SHA}"
+      - name: Publish versioned image
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          REPOSITORY="$(printf '%s' "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
+          IMAGE_NAME="ghcr.io/${REPOSITORY}-devcontainer"
+          docker push "$IMAGE_NAME:1"
+          docker push "$IMAGE_NAME:${GITHUB_SHA}"
