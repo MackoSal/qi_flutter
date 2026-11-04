@@ -16,7 +16,7 @@ jobs:
     container:
       image: ghcr.io/mackosal/qi_flutter-devcontainer:1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -39,7 +39,7 @@ jobs:
     container:
       image: ghcr.io/mackosal/qi_flutter-devcontainer:1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install Dependencies
         working-directory: app/flutter
         run: flutter pub get
@@ -61,7 +61,7 @@ jobs:
     container:
       image: ghcr.io/mackosal/qi_flutter-devcontainer:1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -77,7 +77,7 @@ jobs:
     container:
       image: ghcr.io/mackosal/qi_flutter-devcontainer:1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Test project rename helper
         run: python3 -m unittest discover -s scripts/tests -v
 
@@ -93,7 +93,7 @@ jobs:
           - target: linux
           - target: android
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Flutter Dependencies
         working-directory: app/flutter
@@ -165,7 +165,7 @@ jobs:
     runs-on: macos-15
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -197,7 +197,7 @@ jobs:
       matrix:
         target: [linux, android]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       
       - name: Check Selective Release (Tag Suffix)
         id: filter
