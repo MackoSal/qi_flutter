@@ -70,7 +70,7 @@ jobs:
         working-directory: app/flutter
         run: flutter_rust_bridge_codegen generate
       - name: Check Generated Bindings
-        run: git diff --ignore-all-space --ignore-blank-lines --exit-code -- app/flutter/lib/src/rust rust/crates/rust_lib_qi_flutter/src/frb_generated.rs
+        run: git diff --ignore-all-space --ignore-blank-lines --exit-code -- app/flutter/lib/src/rust/api app/flutter/lib/src/rust/frb_generated.dart app/flutter/lib/src/rust/frb_generated.io.dart app/flutter/lib/src/rust/frb_generated.web.dart rust/crates/rust_lib_qi_flutter/src/frb_generated.rs
 
   rename-script-checks:
     runs-on: ubuntu-24.04
@@ -130,6 +130,7 @@ jobs:
       - name: Verify Android APK contains arm64 only
         if: matrix.target == 'android'
         working-directory: app/flutter
+        shell: bash
         run: |
           set -euo pipefail
           apk=build/app/outputs/flutter-apk/app-profile.apk
