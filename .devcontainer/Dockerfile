@@ -2,7 +2,7 @@
 FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG FLUTTER_VERSION=3.41.9
+ARG FLUTTER_VERSION=3.47.9
 ARG RUST_VERSION=1.94.1
 ARG FRB_CODEGEN_VERSION=2.13.0
 ARG CARGO_AUDIT_VERSION=0.22.2
@@ -48,7 +48,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN curl -fsSL "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz" \
       | tar -xJ -C /opt \
-    && git config --global --add safe.directory /opt/flutter \
+    && git config --system --add safe.directory /opt/flutter \
     && flutter config --no-analytics --android-sdk "$ANDROID_HOME" \
     && flutter precache --linux --android \
     && chown -R ubuntu:ubuntu /opt/flutter

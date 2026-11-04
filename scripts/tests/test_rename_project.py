@@ -23,7 +23,19 @@ class RenameProjectTests(unittest.TestCase):
         self.root.mkdir()
 
         result = subprocess.run(
-            ["git", "ls-files", "-co", "--exclude-standard", "-z"],
+            # GitHub Actions runs this test inside a container where the
+            # checkout can be owned by a different UID. Mark only this
+            # source checkout as safe for this read-only Git command; do not
+            # change the runner's global Git configuration.
+            [
+                "git",
+                "-c",
+                f"safe.directory={SOURCE_ROOT}",
+                "ls-files",
+                "-co",
+                "--exclude-standard",
+                "-z",
+            ],
             cwd=SOURCE_ROOT,
             check=True,
             capture_output=True,

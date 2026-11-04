@@ -7,11 +7,7 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key, this.greeting});
-
-  final String? greeting;
-
+class const MyApp({super.key, final String? greeting}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

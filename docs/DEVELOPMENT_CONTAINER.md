@@ -9,7 +9,7 @@ The repository publishes a shared Linux toolchain image to GHCR. The same image 
 3. Run **Dev Containers: Reopen in Container** from the Command Palette.
 4. Wait for Flutter and Cargokit dependencies to finish installing, then run `flutter doctor -v`.
 
-The container provides Flutter 3.41.9 (including its bundled Dart), Rust 1.94.1, flutter_rust_bridge_codegen 2.13.0, Java 17, Android SDK 36, and Android NDK 28.2.13676358. It includes the Rust Android targets needed for CI and release builds. Application source remains in the mounted checkout.
+The container provides Flutter 3.47.9 (including Dart 3.13.7), Rust 1.94.1, flutter_rust_bridge_codegen 2.13.0, Java 17, Android SDK 36, and Android NDK 28.2.13676358. It includes the Rust Android targets needed for CI and release builds. Application source remains in the mounted checkout.
 
 Android emulators and physical devices remain host-side tools. To run an app on a device, connect or start it on the host and configure Docker/VS Code device forwarding for your operating system. iOS builds require macOS and Xcode and run outside this Linux container.
 
