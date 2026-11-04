@@ -154,7 +154,7 @@ jobs:
 
       - name: Upload Android disk report
         if: always() && matrix.target == 'android'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-disk-report
           path: ${{ github.workspace }}/android-disk-report.txt
