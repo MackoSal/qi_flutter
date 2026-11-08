@@ -16,12 +16,12 @@ The repository includes a working `greet` demo. Use it as an example of the Flut
 | --- | --- | --- | --- |
 | Linux | Yes | Required build | Locally on Linux |
 | Android | Yes | Required build | Android emulator or device |
-| iOS | Yes | Optional iOS Simulator build; a failure does not block later CI jobs | iOS Simulator or device; a device requires macOS and signing |
+| iOS | Yes | CI build is commented out in `.github/workflows/ci-cd.yml` (lines 164–193) | iOS Simulator or device; a device requires macOS and signing |
 | Windows | Yes | CI build disabled | Locally on Windows with Visual Studio C++ tools |
 | macOS | Yes | CI build disabled | Locally on macOS with Xcode |
 | Web | No | Not supported | Not supported |
 
-Windows and macOS targets remain in the Flutter project, but CI does not build them. Restoring those checks requires dedicated Windows/macOS host jobs outside the Linux container. CI requires Linux and arm64 Android native builds; the iOS Simulator build is informational and non-blocking. CI builds do not replace testing on physical devices.
+Windows and macOS targets remain in the Flutter project, but CI does not build them. Restoring those checks requires dedicated Windows/macOS host jobs outside the Linux container. CI requires Linux and arm64 Android native builds. The iOS Simulator job is currently commented out; to re-enable it, uncomment the complete marked block in `.github/workflows/ci-cd.yml` (lines 164–193). CI builds do not replace testing on physical devices.
 
 The generated `frb_generated.web.dart` file is kept current because FRB emits it; its presence does not mean the application supports Web.
 
@@ -31,7 +31,7 @@ Local quality checks and integration test commands are in the [Flutter guide](ap
 
 Agent rules and architecture are documented in [AGENTS.md](AGENTS.md). The branching and release strategy is in [RELEASES_AND_BRANCHING.md](RELEASES_AND_BRANCHING.md), and the Android Gradle Plugin policy is in [ANDROID_AGP9_MIGRATION.md](app/flutter/ANDROID_AGP9_MIGRATION.md).
 
-For a reproducible Linux/Android toolchain shared by CI and VS Code, see the [development container guide](docs/DEVELOPMENT_CONTAINER.md). iOS Simulator builds still run on macOS outside the Linux container.
+For a reproducible Linux/Android toolchain shared by CI and VS Code, see the [development container guide](docs/DEVELOPMENT_CONTAINER.md). Local iOS Simulator builds require macOS and Xcode; the CI job is currently commented out.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request and [SECURITY.md](SECURITY.md) to report a vulnerability privately.
 

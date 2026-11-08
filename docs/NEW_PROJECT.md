@@ -62,7 +62,7 @@ Results may include the script itself, migration history, or documentation refer
 
 Run the quality checks in the [guide](../app/flutter/README.md), then build for your platform. On Android, start with `flutter build apk --debug`; on Linux, `flutter build linux --debug`; on Windows, `flutter build windows --debug`; on macOS, `flutter build macos --debug`. For iOS, use macOS and `flutter build ios --simulator --no-codesign`.
 
-The required native CI builds cover Linux and Android. The iOS Simulator build is optional and non-blocking; Windows and macOS builds are local checks and are currently disabled in CI. See the [platform verification matrix](../testing/README.md#platform-matrix-and-local-requirements) before treating a target as CI-verified.
+The required native CI builds cover Linux and Android. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 164–193); uncomment the complete marked block to enable it. Windows and macOS builds are local checks and are currently disabled in CI. See the [platform verification matrix](../testing/README.md#platform-matrix-and-local-requirements) before treating a target as CI-verified.
 
 ## 6. Set product details
 
@@ -70,7 +70,8 @@ The required native CI builds cover Linux and Android. The iOS Simulator build i
 - Configure release signing according to platform policy. The template uses debug signing for local Android release runs; configure your own key before distribution.
 - Customize the release workflow and GitHub Actions secrets. The template's default releases create a Linux archive and Android APK.
 - Choose and add a project license before redistributing the application. This template intentionally does not select a license on behalf of the product owner.
-- Update the Dev Container image path in `.devcontainer/devcontainer.json` and `.github/workflows/ci-cd.yml` to your lowercase GitHub owner/repository, publish the image from the new repository, and make its GHCR package public if collaborators need anonymous pulls.
+- Keep `ghcr.io/mackosal/qi_flutter-devcontainer:1` as the default image in `.devcontainer/devcontainer.json` and Linux jobs in `.github/workflows/ci-cd.yml`. The rename script preserves this shared template image. It is public so new projects can pull it without credentials.
+- For shared toolchain and package updates, update the image definition in the template repository and publish a new version there. Projects using the `:1` tag receive those updates when they pull the image. If this product needs extra or different tools, build and publish a project-specific image to its own GHCR package, then point the Dev Container and Linux jobs to it; make that package public if collaborators need anonymous pulls.
 - Replace the `@MackoSal` entry in `.github/CODEOWNERS` with the GitHub account or team that will own the new repository.
 - Replace the quickstart screen and `greet` with the first product feature. Start with logic and tests in `qi_core`, then expose it through the FRB API.
 - Update the product README and the “Creating a New Project” section in its `AGENTS.md` to describe the product.

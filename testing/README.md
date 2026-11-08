@@ -30,9 +30,9 @@ These tests use temporary Git repositories and do not rename the current checkou
 
 ## What CI checks for each target
 
-Rust, Flutter, FRB binding, and rename-helper checks are required. The native build matrix requires Linux and Android. The Android PR check builds a profile APK for arm64 and verifies its ABI contents. Tagged Android releases build the four configured Android ABIs. The iOS Simulator build is optional: its result remains visible, but a failure does not fail the workflow or block dependent release jobs. Windows and macOS builds are currently disabled in CI; their Flutter project files and local build instructions remain available.
+Rust, Flutter, FRB binding, and rename-helper checks are required. The native build matrix requires Linux and Android. The Android PR check builds a profile APK for arm64 and verifies its ABI contents. Tagged Android releases build the four configured Android ABIs. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 164–193). To re-enable it, uncomment the complete block between the `BEGIN DISABLED` and `END DISABLED` markers. Windows and macOS builds are also disabled in CI; their Flutter project files and local build instructions remain available.
 
-All Linux CI jobs and the VS Code Dev Container use the public GHCR toolchain image. See [Development container](../docs/DEVELOPMENT_CONTAINER.md) for the pinned versions and setup. iOS continues to use a macOS runner because it requires Xcode.
+All Linux CI jobs and the VS Code Dev Container use the public GHCR toolchain image. See [Development container](../docs/DEVELOPMENT_CONTAINER.md) for the pinned versions and setup. An iOS CI build requires a macOS runner and Xcode; that job is currently commented out.
 
 The Android build job records free disk space and the size of major SDK, NDK, Rust, Gradle, and build directories before and after the build. It uploads this report even if the build fails. Compare these measurements before adding or expanding CI caches; caching whole build directories can consume runner space and hide the actual source of pressure.
 
@@ -53,9 +53,9 @@ Patrol does not support Linux or Windows desktop. Use the first Flutter integrat
 | --- | --- | --- |
 | Linux | Required build | Linux with GTK 3, CMake, Ninja, pkg-config, and a C/C++ compiler |
 | Android | Required build | Android SDK/NDK; emulator or device to run |
-| iOS | Optional, non-blocking Simulator build | macOS and Xcode; a physical device requires signing setup |
+| iOS | CI build commented out; see `.github/workflows/ci-cd.yml` lines 164–193 | macOS and Xcode; a physical device requires signing setup |
 | Windows | Build disabled in CI | Windows and Visual Studio 2022 with the C++ workload |
 | macOS | Build disabled in CI | macOS and Xcode |
 | Web | Not supported | Not supported |
 
-A build and a runtime test are separate steps. After a successful build, run the application or integration test on a locally available device if the change affects native behavior. To restore Windows/macOS CI builds, add dedicated native host jobs outside the Linux container. To disable the optional iOS build, edit the `native-ios` job in `.github/workflows/ci-cd.yml`.
+A build and a runtime test are separate steps. After a successful build, run the application or integration test on a locally available device if the change affects native behavior. To restore Windows/macOS CI builds, add dedicated native host jobs outside the Linux container. To restore the iOS build, uncomment the marked block at lines 164–193 in `.github/workflows/ci-cd.yml`.

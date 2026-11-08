@@ -161,34 +161,40 @@ jobs:
           path: ${{ github.workspace }}/android-disk-report.txt
           if-no-files-found: ignore
 
-  native-ios:
-    name: Build iOS Simulator (optional)
-    runs-on: macos-15
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: 3.47.9
-          cache: true
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: 1.94.1
-      - name: Install Flutter Dependencies
-        working-directory: app/flutter
-        run: flutter pub get
-      - name: Install Cargokit Build Tool Dependencies
-        working-directory: app/flutter/rust_builder/cargokit/build_tool
-        run: dart pub get
-      - name: Build iOS Simulator
-        working-directory: app/flutter
-        run: flutter build ios --simulator --no-codesign
+  # BEGIN DISABLED iOS Simulator CI build.
+  # To re-enable, uncomment this complete block. Add `native-ios` to the release
+  # job's `needs` only if releases should wait for the iOS Simulator build.
+  # The hosted macOS runner was not acquired in the latest run, so this check
+  # delayed and failed the overall workflow without running any build steps.
+  # native-ios:
+  #   name: Build iOS Simulator (optional)
+  #   runs-on: macos-15
+  #   continue-on-error: true
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Install Flutter
+  #       uses: subosito/flutter-action@v2
+  #       with:
+  #         flutter-version: 3.47.9
+  #         cache: true
+  #     - name: Install Rust
+  #       uses: dtolnay/rust-toolchain@stable
+  #       with:
+  #         toolchain: 1.94.1
+  #     - name: Install Flutter Dependencies
+  #       working-directory: app/flutter
+  #       run: flutter pub get
+  #     - name: Install Cargokit Build Tool Dependencies
+  #       working-directory: app/flutter/rust_builder/cargokit/build_tool
+  #       run: dart pub get
+  #     - name: Build iOS Simulator
+  #       working-directory: app/flutter
+  #       run: flutter build ios --simulator --no-codesign
+  # END DISABLED iOS Simulator CI build.
 
   build-and-release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [rust-checks, flutter-checks, frb-codegen-check, rename-script-checks, native-linux-android, native-ios]
+    needs: [rust-checks, flutter-checks, frb-codegen-check, rename-script-checks, native-linux-android]
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/mackosal/qi_flutter-devcontainer:1

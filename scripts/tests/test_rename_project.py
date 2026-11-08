@@ -105,6 +105,15 @@ class RenameProjectTests(unittest.TestCase):
         self.assertIn(NEW_NAME, (self.root / "app/flutter/pubspec.yaml").read_text())
         self.assertTrue((self.root / "rust/crates/rust_lib_qi_wellness/Cargo.toml").is_file())
         self.assertFalse((self.root / "rust/crates/rust_lib_qi_flutter").exists())
+        for path in [
+            self.root / ".devcontainer/devcontainer.json",
+            self.root / ".github/workflows/ci-cd.yml",
+        ]:
+            self.assertIn(
+                "ghcr.io/mackosal/qi_flutter-devcontainer:1",
+                path.read_text(encoding="utf-8"),
+                path,
+            )
         self.assertTrue(
             (
                 self.root
@@ -146,6 +155,9 @@ class RenameProjectTests(unittest.TestCase):
                 contents = path.read_text(encoding="utf-8")
             except UnicodeDecodeError:
                 continue
+            contents = contents.replace(
+                "ghcr.io/mackosal/qi_flutter-devcontainer", ""
+            )
             if OLD_NAME in contents or "com.example" in contents:
                 leftovers.append(path.relative_to(self.root).as_posix())
         self.assertEqual(leftovers, [])

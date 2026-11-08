@@ -32,7 +32,7 @@ Resolve items marked as required by `flutter doctor -v` for your target platform
 | macOS desktop / iOS | Xcode; CocoaPods is also needed for iOS |
 | Android | Android Studio, Android SDK, accepted SDK licenses; Cargokit uses the Android NDK and adds the required Rust targets |
 
-iOS and macOS local builds require a Mac. Android and Windows can be built on their respective operating systems. CI requires Linux and an arm64 Android profile build; tagged Android releases build all four configured ABIs. The iOS Simulator build is a non-blocking check, and CI currently skips Windows and macOS builds.
+iOS and macOS local builds require a Mac. Android and Windows can be built on their respective operating systems. CI requires Linux and an arm64 Android profile build; tagged Android releases build all four configured ABIs. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 164–193). Uncomment the complete marked block to enable it. CI currently skips Windows and macOS builds.
 
 ## 3. Fetch dependencies
 
