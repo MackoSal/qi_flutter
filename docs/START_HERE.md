@@ -26,10 +26,10 @@ This guide helps you find the right file, even if you are new to Flutter and Rus
 app/flutter/lib/main.dart
     │ imports and calls a function
     ▼
-app/flutter/lib/src/rust/api/simple.dart       generated Dart interface
+app/flutter/lib/src/rust/api/core.dart         generated Dart interface
     │ FFI, flutter_rust_bridge
     ▼
-rust/crates/qi_gateway/src/api/simple.rs  thin adapter
+rust/crates/qi_gateway/src/api/core.rs    thin adapter, one module per micro-app crate
     │ calls the logic
     ▼
 rust/crates/qi_core/src/lib.rs                 Rust logic and unit test

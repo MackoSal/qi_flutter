@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qi_flutter/src/rust/api/simple.dart';
+import 'package:qi_flutter/src/rust/api/core.dart';
 import 'package:qi_flutter/src/rust/frb_generated.dart';
 
 Future<void> main() async {
