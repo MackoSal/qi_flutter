@@ -22,7 +22,8 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  qi_gateway  
   - Owns UI widgets and view state only. No business rules, calculations, or I/O logic.
   - Calls Rust exclusively through the generated bindings in `lib/src/rust/`.
 - **Bridge layer - `rust/crates/qi_gateway/`:**
-  - Thin FFI adapter built with **flutter_rust_bridge (FRB) v2**. Public functions in `src/api/` are exposed to Dart.
+  - Thin FFI adapter built with **flutter_rust_bridge (FRB) v2**. Public functions in `src/api/` are exposed to Dart, with one module per micro-app crate (`api/core.rs` for `qi_core`).
+  - Composition root: depends on the micro-app crates and selects their driver crates (per platform with `cfg(target_os)` or per product variant with Cargo features). See [`rust/crates/qi_gateway/README.md`](rust/crates/qi_gateway/README.md), which also documents the Rust ↔ Dart type mapping.
   - Converts between FFI-friendly types and `qi_core` types. It must not contain business logic.
   - “Gateway” means the Flutter-to-Rust FFI boundary here; it is not a hardware or device driver.
 - **Core layer - `rust/crates/qi_core/`:**
@@ -36,7 +37,7 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  qi_gateway  
 ### Changing the Rust API exposed to Dart
 
 1. Implement the logic in `qi_core` with unit tests.
-2. Expose it through a function in `qi_gateway/src/api/`.
+2. Expose it through a function in the matching module of `qi_gateway/src/api/` (for example `api/core.rs` for `qi_core`). Check how its types map to Dart in [`rust/crates/qi_gateway/README.md`](rust/crates/qi_gateway/README.md).
 3. Regenerate the bindings from `app/flutter/`:
 
    ```bash

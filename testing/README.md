@@ -36,7 +36,9 @@ pub fn diagnostics() -> String { ... }
 
 FRB copies the doc comment into the generated Dart code, and the check lists the
 function as intentionally unused. A marker without a reason, or a marker on a
-function that is used, is reported too. The pre-commit hook and the
+function that is used, is reported too. The Rust ↔ Dart type mapping table in
+[`rust/crates/qi_gateway/README.md`](../rust/crates/qi_gateway/README.md) shows
+which generated items the check covers. The pre-commit hook and the
 `frb-api-usage` CI job report unused functions as a warning only: the CI job
 turns red and lists each function as an annotation and in the job summary, but
 it does not fail the workflow or block a release. CI also verifies that FRB code

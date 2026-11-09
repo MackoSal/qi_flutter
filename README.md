@@ -10,6 +10,32 @@ A ready starting point for desktop and mobile applications. Flutter renders the 
 
 The repository includes a working `greet` demo. Use it as an example of the Flutter → Rust flow, not as product logic.
 
+## Architecture
+
+```mermaid
+flowchart LR
+    ui["Flutter app<br/>Dart UI, app/flutter"]
+    gw["qi_gateway<br/>FFI boundary,<br/>picks the drivers"]
+    core["qi_core<br/>example micro-app"]
+    app["micro-app crate<br/>e.g. processes data<br/>from an external device"]
+    subgraph drivers["Driver crates: one is chosen"]
+        uart["UART"]
+        ble["BLE"]
+        usb["USB"]
+    end
+    ui -->|"flutter_rust_bridge (FFI)"| gw
+    gw --> core
+    gw -.-> app
+    gw -.->|creates and injects| drivers
+    app -.->|uses through a trait| drivers
+    classDef planned stroke-dasharray: 5 5
+    class app,uart,ble,usb planned
+```
+
+Flutter renders the UI and calls Rust only through `qi_gateway`. The gateway exposes the API of the micro-app crates to Dart and contains no business logic. Micro-apps hold the logic and reach hardware only through a trait, so the driver (UART, BLE, USB) can be swapped. The gateway selects the driver crates per platform (`cfg(target_os)`) or per product variant (Cargo features). Micro-app and driver crates can live in `rust/crates/` or be external Cargo dependencies.
+
+`qi_core` is an empty example micro-app. Dashed elements show the intended structure and are not part of the template yet. The gateway's role, API module layout, driver selection, and Rust ↔ Dart type mapping are described in [`rust/crates/qi_gateway/README.md`](rust/crates/qi_gateway/README.md).
+
 ## Platforms
 
 | Platform | Flutter project | CI verification | Run/device testing |
@@ -54,6 +80,7 @@ This table lists the repository's Markdown files and explains who they are for. 
 | [`app/flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md`](app/flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md) | Human | Brief instructions for replacing the iOS launch-screen images. |
 | [`app/flutter/rust_builder/README.md`](app/flutter/rust_builder/README.md) | Human | Notes that this directory is build glue for compiling Rust with Flutter and should generally be left alone. |
 | [`app/flutter/rust_builder/cargokit/build_tool/README.md`](app/flutter/rust_builder/cargokit/build_tool/README.md) | Human | Upstream Cargokit sample-project documentation kept with the vendored build tool. |
+| [`rust/crates/qi_gateway/README.md`](rust/crates/qi_gateway/README.md) | Both | Role of the FFI gateway crate, API module layout, driver selection, Rust ↔ Dart type mapping, and the allow-unused marker. |
 | [`docs/START_HERE.md`](docs/START_HERE.md) | Human | Repository map for beginners, showing where UI, Rust logic, bridge APIs, and tests belong. |
 | [`docs/NEW_PROJECT.md`](docs/NEW_PROJECT.md) | Human | Steps for creating a product repository from this template and renaming its packages and native identifiers. |
 | [`docs/DEVELOPMENT_CONTAINER.md`](docs/DEVELOPMENT_CONTAINER.md) | Human | Instructions for using the shared Linux/Android toolchain in CI and the VS Code Dev Container. |
