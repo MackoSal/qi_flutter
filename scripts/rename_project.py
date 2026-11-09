@@ -41,7 +41,7 @@ def main() -> int:
         description="Rename the template's project/package names and native app ID."
     )
     parser.add_argument("old_name", help="Current project name, usually qi_flutter")
-    parser.add_argument("new_name", help="New Dart/Rust crate name, e.g. qi_wellness")
+    parser.add_argument("new_name", help="New Dart application package name, e.g. qi_wellness")
     parser.add_argument(
         "--application-id",
         required=True,
@@ -55,7 +55,7 @@ def main() -> int:
     if not re.fullmatch(r"[a-z][a-z0-9_]*", args.old_name):
         parser.error("old_name must be a lowercase Dart/Rust name, e.g. qi_flutter")
     if not re.fullmatch(r"[a-z][a-z0-9_]*", args.new_name):
-        parser.error("new_name must be a lowercase Dart/Rust name, e.g. qi_wellness")
+        parser.error("new_name must be a lowercase Dart package name, e.g. qi_wellness")
     if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+", args.application_id):
         parser.error("--application-id must be a reverse-DNS ID, e.g. pl.example.app")
     if args.old_name == args.new_name:
@@ -92,13 +92,6 @@ def main() -> int:
         encoded = updated.encode("utf-8")
         if encoded != original:
             edits.append((relative, encoded))
-
-        bridge_dir = Path("rust/crates") / f"rust_lib_{args.old_name}"
-        if bridge_dir in relative.parents:
-            if bridge_dir not in moved_directories:
-                moves.append((bridge_dir, Path("rust/crates") / f"rust_lib_{args.new_name}"))
-                moved_directories.add(bridge_dir)
-            continue
 
         kotlin_dir = Path("app/flutter/android/app/src/main/kotlin/com/example") / args.old_name
         if kotlin_dir in relative.parents:

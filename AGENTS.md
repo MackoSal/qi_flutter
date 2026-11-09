@@ -15,15 +15,16 @@ This repository is a reusable template for fully native applications built with 
 ## 3. Architecture (Multi-crate Rust Workspace)
 
 ```text
-Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  rust_lib_qi_flutter  ──►  qi_core
+Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  qi_gateway  ──►  qi_core
 ```
 
 - **Presentation layer - `app/flutter/`:**
   - Owns UI widgets and view state only. No business rules, calculations, or I/O logic.
   - Calls Rust exclusively through the generated bindings in `lib/src/rust/`.
-- **Bridge layer - `rust/crates/rust_lib_qi_flutter/`:**
+- **Bridge layer - `rust/crates/qi_gateway/`:**
   - Thin FFI adapter built with **flutter_rust_bridge (FRB) v2**. Public functions in `src/api/` are exposed to Dart.
   - Converts between FFI-friendly types and `qi_core` types. It must not contain business logic.
+  - “Gateway” means the Flutter-to-Rust FFI boundary here; it is not a hardware or device driver.
 - **Core layer - `rust/crates/qi_core/`:**
   - Pure Rust domain rules, state, and calculations. Keep operating-system, hardware, and external I/O behind explicit adapters so core behavior remains easy to test.
   - Has **no dependency on Flutter or FRB** and must be testable with plain `cargo test`.
@@ -35,7 +36,7 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  rust_lib_qi_
 ### Changing the Rust API exposed to Dart
 
 1. Implement the logic in `qi_core` with unit tests.
-2. Expose it through a function in `rust_lib_qi_flutter/src/api/`.
+2. Expose it through a function in `qi_gateway/src/api/`.
 3. Regenerate the bindings from `app/flutter/`:
 
    ```bash
@@ -46,7 +47,7 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  rust_lib_qi_
 5. FRB currently generates a web-specific binding file even though Web is not a supported application target. Keep it in sync with codegen; its presence does not add Web support.
 6. Call every exposed function from application code under `app/flutter/lib/`. The FRB API usage check (`dart run tool/check_frb_api_usage.dart`) warns about functions that are not used. If one must stay unused for now, add `frb-api-usage: allow-unused (<reason>)` to its Rust doc comment.
 
-The FRB version must stay identical in `rust/crates/rust_lib_qi_flutter/Cargo.toml`, `app/flutter/pubspec.yaml`, and `.devcontainer/Dockerfile`.
+The FRB version must stay identical in `rust/crates/qi_gateway/Cargo.toml`, `app/flutter/pubspec.yaml`, and `.devcontainer/Dockerfile`.
 
 ### Documentation language
 

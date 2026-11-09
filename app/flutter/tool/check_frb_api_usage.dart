@@ -5,6 +5,7 @@ import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/source/line_info.dart';
 
 /// Marks an endpoint as intentionally unused. It belongs in the Rust doc
 /// comment; FRB copies doc comments into the generated Dart bindings.
@@ -58,26 +59,7 @@ Future<void> main() async {
     final endpoints = <String, _Endpoint>{};
     for (final file in generatedFiles) {
       final unit = await _resolvedUnit(collection, file);
-      for (final declaration
-          in unit.declarations.whereType<FunctionDeclaration>()) {
-        final name = declaration.name.lexeme;
-        final element = declaration.declaredFragment?.element;
-        if (name.startsWith('_') || element == null) {
-          continue;
-        }
-
-        endpoints.putIfAbsent(
-          _elementKey(element),
-          () => _Endpoint(
-            name: name,
-            generatedFile: file,
-            line: unit.lineInfo.getLocation(declaration.name.offset).lineNumber,
-            allowUnusedReason: _allowUnusedReason(
-              declaration.documentationComment,
-            ),
-          ),
-        );
-      }
+      unit.accept(_EndpointCollector(file, unit.lineInfo, endpoints));
     }
 
     final usedEndpoints = <String>{};
@@ -199,7 +181,98 @@ String _relativePath(Directory base, File file) {
 }
 
 String _elementKey(ExecutableElement element) {
-  return '${element.library.uri}::${element.name}';
+  final enclosing = element.enclosingElement;
+  final owner = enclosing is LibraryElement ? '' : '${enclosing?.name}.';
+  final setter = element is SetterElement ? '=' : '';
+  return '${element.library.uri}::$owner${element.name}$setter';
+}
+
+/// Collects the Dart endpoints FRB generates for the Rust API: top-level
+/// functions, plus class members that call into Rust. Members without a body
+/// belong to opaque Rust types; FRB implements them in frb_generated.dart.
+/// Dart-only members such as `==`, `hashCode` and plain const constructors of
+/// mirrored structs are not endpoints.
+class const _EndpointCollector(
+  final File generatedFile,
+  final LineInfo lineInfo,
+  final Map<String, _Endpoint> endpoints,
+) extends RecursiveAstVisitor<void> {
+  @override
+  void visitFunctionDeclaration(FunctionDeclaration node) {
+    if (node.parent is CompilationUnit) {
+      _add(
+        node.declaredFragment?.element,
+        node.name.lexeme,
+        node.name.offset,
+        node.documentationComment,
+      );
+    }
+  }
+
+  @override
+  void visitMethodDeclaration(MethodDeclaration node) {
+    final isOverride = node.metadata.any(
+      (annotation) => annotation.name.name == 'override',
+    );
+    if (!node.isOperator && !isOverride && _callsRust(node.body)) {
+      final setter = node.isSetter ? '=' : '';
+      _add(
+        node.declaredFragment?.element,
+        '${node.name.lexeme}$setter',
+        node.name.offset,
+        node.documentationComment,
+      );
+    }
+  }
+
+  @override
+  void visitConstructorDeclaration(ConstructorDeclaration node) {
+    // A constructor without a body is a plain Dart constructor of a mirrored
+    // struct, so only constructors that forward to Rust count.
+    final name = node.name;
+    if (node.body is! EmptyFunctionBody && _callsRust(node.body)) {
+      _add(
+        node.declaredFragment?.element,
+        name?.lexeme ?? '',
+        (name ?? node.typeName ?? node.beginToken).offset,
+        node.documentationComment,
+      );
+    }
+  }
+
+  bool _callsRust(FunctionBody body) =>
+      body is EmptyFunctionBody ||
+      body.toSource().contains('RustLib.instance.api');
+
+  void _add(
+    ExecutableElement? element,
+    String memberName,
+    int nameOffset,
+    Comment? documentation,
+  ) {
+    final owner = element?.enclosingElement;
+    final ownerName = owner is LibraryElement ? null : owner?.name;
+    if (element == null ||
+        memberName.startsWith('_') ||
+        (ownerName?.startsWith('_') ?? false)) {
+      return;
+    }
+
+    final displayName = ownerName == null
+        ? memberName
+        : memberName.isEmpty
+        ? ownerName
+        : '$ownerName.$memberName';
+    endpoints.putIfAbsent(
+      _elementKey(element),
+      () => _Endpoint(
+        name: displayName,
+        generatedFile: generatedFile,
+        line: lineInfo.getLocation(nameOffset).lineNumber,
+        allowUnusedReason: _allowUnusedReason(documentation),
+      ),
+    );
+  }
 }
 
 /// Adds one annotation per finding and a job summary, so the details are
@@ -283,13 +356,48 @@ class const _ApiReferenceVisitor(
 ) extends RecursiveAstVisitor<void> {
   @override
   void visitSimpleIdentifier(SimpleIdentifier node) {
-    final element = node.element;
-    if (element is ExecutableElement) {
-      final key = _elementKey(element);
+    _markUsed(node.element);
+    super.visitSimpleIdentifier(node);
+  }
+
+  @override
+  void visitConstructorName(ConstructorName node) {
+    _markUsed(node.element);
+    super.visitConstructorName(node);
+  }
+
+  // Setters and compound assignments resolve through the expression, not the
+  // identifier on the left-hand side.
+  @override
+  void visitAssignmentExpression(AssignmentExpression node) {
+    _markCompound(node);
+    super.visitAssignmentExpression(node);
+  }
+
+  @override
+  void visitPrefixExpression(PrefixExpression node) {
+    _markCompound(node);
+    super.visitPrefixExpression(node);
+  }
+
+  @override
+  void visitPostfixExpression(PostfixExpression node) {
+    _markCompound(node);
+    super.visitPostfixExpression(node);
+  }
+
+  void _markCompound(CompoundAssignmentExpression node) {
+    _markUsed(node.readElement);
+    _markUsed(node.writeElement);
+  }
+
+  void _markUsed(Element? element) {
+    final base = element?.baseElement;
+    if (base is ExecutableElement) {
+      final key = _elementKey(base);
       if (apiFunctionKeys.contains(key)) {
         usedApiFunctions.add(key);
       }
     }
-    super.visitSimpleIdentifier(node);
   }
 }

@@ -14,8 +14,8 @@ This guide helps you find the right file, even if you are new to Flutter and Rus
 | `app/flutter/rust_builder/` | Plugin that builds and links Rust through Cargokit | Usually not needed for product code changes |
 | `app/flutter/rust_builder/cargokit/` | Vendored Cargokit tool | Do not edit manually; treat it as a dependency |
 | `rust/crates/qi_core/src/` | Domain logic, calculations, and state in plain Rust | When implementing product behavior |
-| `rust/crates/rust_lib_qi_flutter/src/api/` | Thin layer of functions exposed to Flutter | When new logic must be callable from Dart |
-| `rust/crates/rust_lib_qi_flutter/src/frb_generated.rs` | Generated Rust FRB code | Do not edit manually |
+| `rust/crates/qi_gateway/src/api/` | Thin layer of functions exposed to Flutter | When new logic must be callable from Dart |
+| `rust/crates/qi_gateway/src/frb_generated.rs` | Generated Rust FRB code | Do not edit manually |
 | `scripts/` | Tools for preparing a project from this template | When creating a new product based on this repository |
 | `testing/`, `.github/workflows/` | Test instructions and automated checks/builds | When changing project verification |
 | `design/` | Place for design tokens, assets, and design-system documentation | When the project starts work on a shared visual system |
@@ -29,7 +29,7 @@ app/flutter/lib/main.dart
 app/flutter/lib/src/rust/api/simple.dart       generated Dart interface
     │ FFI, flutter_rust_bridge
     ▼
-rust/crates/rust_lib_qi_flutter/src/api/simple.rs  thin adapter
+rust/crates/qi_gateway/src/api/simple.rs  thin adapter
     │ calls the logic
     ▼
 rust/crates/qi_core/src/lib.rs                 Rust logic and unit test
@@ -45,7 +45,7 @@ The current screen calls `greet(name: "Tom")`. This example shows the complete f
 
 1. **Change the logic in `rust/crates/qi_core/src/lib.rs`.** Add or modify a domain function. If its behavior changes, add a unit test next to the logic in a `#[cfg(test)]` block.
 2. **Run the Rust tests.** From `rust`, run `cargo test --workspace`. `qi_core` can be tested without starting Flutter.
-3. **Expose the logic through the adapter.** Add a function in `rust/crates/rust_lib_qi_flutter/src/api/` that calls `qi_core`. Keep product calculations and rules out of the adapter.
+3. **Expose the logic through the adapter.** Add a function in `rust/crates/qi_gateway/src/api/` that calls `qi_core`. Keep product calculations and rules out of the adapter.
 4. **Generate bindings.** From `app/flutter`, run `flutter_rust_bridge_codegen generate`. FRB updates files under `app/flutter/lib/src/rust/` and the Rust glue. Do not edit these generated files by hand.
 5. **Call the API from the UI.** Import the generated API file in `app/flutter/lib/` and use the function in a widget. UI can manage presentation state, while product logic remains in Rust.
 6. **Add tests.** Cover logic with Rust tests, the view with a test in `app/flutter/test/`, and Rust–Flutter integration with a test in `app/flutter/integration_test/` on a native device/target.
@@ -54,7 +54,7 @@ The current screen calls `greet(name: "Tom")`. This example shows the complete f
 ## Files not to edit manually
 
 - `app/flutter/lib/src/rust/frb_generated*.dart` and other `@generated` files: regenerate them with FRB.
-- `rust/crates/rust_lib_qi_flutter/src/frb_generated.rs`: regenerate it with FRB.
+- `rust/crates/qi_gateway/src/frb_generated.rs`: regenerate it with FRB.
 - `app/flutter/rust_builder/cargokit/`: vendored Cargokit; update it as a dependency, not as application code.
 
 ## Other guides

@@ -124,7 +124,7 @@ The hook runs formatting, linting, analysis, and Rust/Flutter tests before a com
 
 - Screens and widgets: `lib/main.dart` and `lib/`.
 - Rust logic: `../../rust/crates/qi_core/src/`.
-- Public functions exposed to Flutter: `../../rust/crates/rust_lib_qi_flutter/src/api/`.
+- Public functions exposed to Flutter: `../../rust/crates/qi_gateway/src/api/`.
 - Rust tests: next to the logic in `qi_core` or in the crate's `tests/` directory.
 - Flutter tests: `test/`; integration tests: `integration_test/`.
 
@@ -134,7 +134,7 @@ See [START_HERE.md](../../docs/START_HERE.md) for the repository map and call fl
 flutter_rust_bridge_codegen generate
 ```
 
-Do not manually edit `lib/src/rust/frb_generated*.dart` or `rust/crates/rust_lib_qi_flutter/src/frb_generated.rs`.
+Do not manually edit `lib/src/rust/frb_generated*.dart` or `rust/crates/qi_gateway/src/frb_generated.rs`.
 
 ## Common problems
 

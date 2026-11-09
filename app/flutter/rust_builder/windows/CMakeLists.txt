@@ -5,16 +5,16 @@
 cmake_minimum_required(VERSION 3.14)
 
 # Project-level configuration.
-set(PROJECT_NAME "rust_lib_qi_flutter")
+set(PROJECT_NAME "qi_gateway")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 include("../cargokit/cmake/cargokit.cmake")
-apply_cargokit(${PROJECT_NAME} ../../../../../../../../rust/crates/rust_lib_qi_flutter rust_lib_qi_flutter "")
+apply_cargokit(${PROJECT_NAME} ../../../../../../../../rust/crates/qi_gateway qi_gateway "")
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
 # external build triggered from this build file.
-set(rust_lib_qi_flutter_bundled_libraries
+set(qi_gateway_bundled_libraries
   "${${PROJECT_NAME}_cargokit_lib}"
   PARENT_SCOPE
 )

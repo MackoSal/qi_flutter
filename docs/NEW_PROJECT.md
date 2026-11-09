@@ -15,12 +15,12 @@ Do not develop product-specific logic in the template repository. A separate rep
 
 ## 2. Choose names and an identifier
 
-- `new_name` is used as the Dart package name and Rust bridge crate name. Use lowercase letters, digits, and underscores, for example `qi_wellness`.
+- `new_name` is used as the Dart application package name. The Rust FFI gateway crate remains named `qi_gateway` in product repositories so its technical role does not depend on the product name. Use lowercase letters, digits, and underscores, for example `qi_wellness`.
 - `application-id` is a unique native platform identifier in reverse-DNS notation, for example `com.yourcompany.qiwellness`. Choose a domain you control. Do not use `com.example` in a published product.
 
 ## 3. Preview the changes first
 
-The script changes occurrences of the old name in tracked project text files, updates example `com.example` identifiers, moves Android `MainActivity.kt` to the directory matching the new application ID, and renames paths containing the project name. It skips vendored Cargokit, build directories, and its own regression tests under `scripts/tests/`.
+The script changes occurrences of the old application name in tracked project text files, updates example `com.example` identifiers, moves Android `MainActivity.kt` to the directory matching the new application ID, and renames paths containing the application name. It keeps the technical Rust crate `qi_gateway` unchanged. It skips vendored Cargokit, build directories, and its own regression tests under `scripts/tests/`.
 
 Start with a preview:
 

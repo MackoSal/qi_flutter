@@ -87,10 +87,7 @@ class RenameProjectTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Text files to update:", result.stdout)
-        self.assertIn(
-            "move rust/crates/rust_lib_qi_flutter -> rust/crates/rust_lib_qi_wellness",
-            result.stdout,
-        )
+        self.assertIn("Paths to move: 1", result.stdout)
         after = {
             path.relative_to(self.root): path.read_bytes()
             for path in self._text_files()
@@ -103,8 +100,12 @@ class RenameProjectTests(unittest.TestCase):
 
         self.assertTrue((self.root / "app/flutter/pubspec.yaml").is_file())
         self.assertIn(NEW_NAME, (self.root / "app/flutter/pubspec.yaml").read_text())
-        self.assertTrue((self.root / "rust/crates/rust_lib_qi_wellness/Cargo.toml").is_file())
+        self.assertTrue((self.root / "rust/crates/qi_gateway/Cargo.toml").is_file())
         self.assertFalse((self.root / "rust/crates/rust_lib_qi_flutter").exists())
+        self.assertIn(
+            'name = "qi_gateway"',
+            (self.root / "rust/crates/qi_gateway/Cargo.toml").read_text(),
+        )
         for path in [
             self.root / ".devcontainer/devcontainer.json",
             self.root / ".github/workflows/ci-cd.yml",
@@ -176,7 +177,7 @@ class RenameProjectTests(unittest.TestCase):
         self.assertEqual(invalid_old_name.returncode, 2)
 
     def test_refuses_path_conflict_before_modifying_files(self) -> None:
-        conflict = self.root / "rust/crates/rust_lib_qi_wellness"
+        conflict = self.root / "app/flutter/android/app/src/main/kotlin/pl/example/qiwellness"
         conflict.mkdir(parents=True)
         before = (self.root / "app/flutter/pubspec.yaml").read_bytes()
         result = self._run(OLD_NAME, NEW_NAME, "--application-id", NEW_ID)

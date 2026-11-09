@@ -19,12 +19,14 @@ dart run tool/check_frb_api_usage.dart
 flutter test
 ```
 
-The FRB API usage check reports top-level functions that Rust exposes to Dart
-and that application code under `lib/` never references. It ignores generated
-files and does not count test-only references. Methods of generated classes and
+The FRB API usage check reports endpoints that Rust exposes to Dart and that
+application code under `lib/` never references: top-level functions, plus
+methods, constructors, and field accessors of generated classes that call into
+Rust. It ignores generated files and does not count test-only references. Plain
+Dart members of mirrored structs (`==`, `hashCode`, const constructors) and
 standalone exported types are not checked.
 
-To keep an unused function on purpose, add a marker with a reason to its Rust
+To keep an unused function or method on purpose, add a marker with a reason to its Rust
 doc comment:
 
 ```rust

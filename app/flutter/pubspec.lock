@@ -378,7 +378,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
-  rust_lib_qi_flutter:
+  qi_gateway:
     dependency: "direct main"
     description:
       path: rust_builder

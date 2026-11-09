@@ -2,7 +2,7 @@
 resolver = "2"
 members = [
     "crates/qi_core",
-    "crates/rust_lib_qi_flutter"
+    "crates/qi_gateway"
 ]
 
 [workspace.lints.rust]
