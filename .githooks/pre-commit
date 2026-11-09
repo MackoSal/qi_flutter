@@ -24,6 +24,10 @@ pass() {
   printf "${GREEN}  ✓ %s${NC}\n" "$1"
 }
 
+warn() {
+  printf "${YELLOW}  ! %s${NC}\n" "$1"
+}
+
 fail() {
   printf "${RED}  ✗ %s${NC}\n" "$1"
   errors=$((errors + 1))
@@ -67,6 +71,19 @@ if [ -f "app/flutter/pubspec.yaml" ]; then
     pass "Flutter analyze"
   else
     fail "Flutter analyze — run: cd app/flutter && flutter analyze"
+  fi
+
+  # Warning only, like the non-blocking CI job. Exit code 1 means unused API
+  # functions were found; any other failure means the check itself is broken.
+  step "dart run tool/check_frb_api_usage.dart"
+  frb_usage_status=0
+  (cd app/flutter && dart run tool/check_frb_api_usage.dart 2>&1) || frb_usage_status=$?
+  if [ "$frb_usage_status" -eq 0 ]; then
+    pass "FRB API usage"
+  elif [ "$frb_usage_status" -eq 1 ]; then
+    warn "FRB API usage — unused functions listed above (warning, commit not blocked)"
+  else
+    fail "FRB API usage check crashed — run: cd app/flutter && dart run tool/check_frb_api_usage.dart"
   fi
 
   step "flutter test"

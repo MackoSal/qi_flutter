@@ -56,6 +56,23 @@ jobs:
         working-directory: app/flutter
         run: flutter test
 
+  # Non-blocking: a failure marks this job red and adds warning annotations
+  # plus a job summary, but does not fail the workflow or block releases.
+  frb-api-usage:
+    name: FRB API usage (warning only)
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    container:
+      image: ghcr.io/mackosal/qi_flutter-devcontainer:1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Dependencies
+        working-directory: app/flutter
+        run: flutter pub get
+      - name: Check for unused FRB API functions
+        working-directory: app/flutter
+        run: dart run tool/check_frb_api_usage.dart
+
   frb-codegen-check:
     runs-on: ubuntu-24.04
     container:
