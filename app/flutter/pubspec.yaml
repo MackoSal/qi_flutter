@@ -42,7 +42,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   leancode_lint: ^27.0.0
-  patrol: ^4.10.0
+  patrol: ^4.11.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
