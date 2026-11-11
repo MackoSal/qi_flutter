@@ -32,7 +32,7 @@ Resolve items marked as required by `flutter doctor -v` for your target platform
 | macOS desktop / iOS | Xcode; CocoaPods is also needed for iOS |
 | Android | Android Studio, Android SDK, accepted SDK licenses; Cargokit uses the Android NDK and adds the required Rust targets |
 
-iOS and macOS local builds require a Mac. Android and Windows can be built on their respective operating systems. CI requires Linux and an arm64 Android profile build; tagged Android releases build all four configured ABIs. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 180–209). Uncomment the complete marked block to enable it. CI currently skips Windows and macOS builds.
+iOS and macOS local builds require a Mac. Android and Windows can be built on their respective operating systems. CI requires Linux and an arm64 Android profile build; tagged Android releases build all four configured ABIs. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 141–170). Uncomment the complete marked block to enable it. CI currently skips Windows and macOS builds.
 
 ## 3. Fetch dependencies
 
@@ -134,7 +134,7 @@ See [START_HERE.md](../../docs/START_HERE.md) for the repository map and call fl
 flutter_rust_bridge_codegen generate
 ```
 
-Do not manually edit `lib/src/rust/frb_generated*.dart` or `rust/crates/qi_gateway/src/frb_generated.rs`. Commit the regenerated files together with the Rust change. The pre-commit hook blocks the commit when they are stale or not staged; run the same check manually with `bash scripts/check_frb_bindings.sh` from the repository root.
+Do not manually edit `lib/src/rust/frb_generated*.dart` or `rust/crates/qi_gateway/src/frb_generated.rs`. Commit the regenerated files together with the Rust change. The pre-commit hook blocks the commit when they are out of date; run the same check manually with `bash scripts/check_frb_bindings.sh` from the repository root (see [scripts/README.md](../../scripts/README.md)).
 
 ## Common problems
 

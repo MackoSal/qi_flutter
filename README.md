@@ -42,12 +42,12 @@ Flutter renders the UI and calls Rust only through `qi_gateway`. The gateway exp
 | --- | --- | --- | --- |
 | Linux | Yes | Required build | Locally on Linux |
 | Android | Yes | Required build | Android emulator or device |
-| iOS | Yes | CI build is commented out in `.github/workflows/ci-cd.yml` (lines 180–209) | iOS Simulator or device; a device requires macOS and signing |
+| iOS | Yes | CI build is commented out in `.github/workflows/ci-cd.yml` (lines 141–170) | iOS Simulator or device; a device requires macOS and signing |
 | Windows | Yes | CI build disabled | Locally on Windows with Visual Studio C++ tools |
 | macOS | Yes | CI build disabled | Locally on macOS with Xcode |
 | Web | No | Not supported | Not supported |
 
-Windows and macOS targets remain in the Flutter project, but CI does not build them. Restoring those checks requires dedicated Windows/macOS host jobs outside the Linux container. CI requires Linux and arm64 Android native builds. The iOS Simulator job is currently commented out; to re-enable it, uncomment the complete marked block in `.github/workflows/ci-cd.yml` (lines 180–209). CI builds do not replace testing on physical devices.
+Windows and macOS targets remain in the Flutter project, but CI does not build them. Restoring those checks requires dedicated Windows/macOS host jobs outside the Linux container. CI requires Linux and arm64 Android native builds. The iOS Simulator job is currently commented out; to re-enable it, uncomment the complete marked block in `.github/workflows/ci-cd.yml` (lines 141–170). CI builds do not replace testing on physical devices.
 
 The generated `frb_generated.web.dart` file is kept current because FRB emits it; its presence does not mean the application supports Web.
 
@@ -60,6 +60,16 @@ Agent rules and architecture are documented in [AGENTS.md](AGENTS.md). The branc
 For a reproducible Linux/Android toolchain shared by CI and VS Code, see the [development container guide](docs/DEVELOPMENT_CONTAINER.md). Local iOS Simulator builds require macOS and Xcode; the CI job is currently commented out.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request and [SECURITY.md](SECURITY.md) to report a vulnerability privately.
+
+### Committing unused FRB API functions
+
+The pre-commit hook blocks a commit when Rust exposes a function to Dart that the app does not use. CI only warns about it. The hook blocks because editors such as VS Code show hook output only when a commit fails, so a warning would go unnoticed. To commit such a function on purpose, commit from a terminal with the flag:
+
+```bash
+FRB_ALLOW_UNUSED=1 git commit
+```
+
+For a function that should stay unused for longer, add `/// frb-api-usage: allow-unused (<reason>)` to its Rust doc comment instead. Then there is no warning, and a normal commit passes, also from the VS Code commit button.
 
 ## Markdown files
 
@@ -84,6 +94,7 @@ This table lists the repository's Markdown files and explains who they are for. 
 | [`docs/START_HERE.md`](docs/START_HERE.md) | Human | Repository map for beginners, showing where UI, Rust logic, bridge APIs, and tests belong. |
 | [`docs/NEW_PROJECT.md`](docs/NEW_PROJECT.md) | Human | Steps for creating a product repository from this template and renaming its packages and native identifiers. |
 | [`docs/DEVELOPMENT_CONTAINER.md`](docs/DEVELOPMENT_CONTAINER.md) | Human | Instructions for using the shared Linux/Android toolchain in CI and the VS Code Dev Container. |
+| [`scripts/README.md`](scripts/README.md) | Human | Beginner guide to the helper scripts, the temporary directories they create, and how CI uses them. |
 | [`testing/README.md`](testing/README.md) | Both | Local quality commands, CI platform coverage, and manual device/integration testing guidance. |
 | [`design/README.md`](design/README.md) | Both | Explains the design workspace layout and where future design tokens and component references belong. |
 | [`design/docs/agent-workflow.md`](design/docs/agent-workflow.md) | AI | Workflow for agents making design-system, token, reusable-widget, or Widgetbook changes. |

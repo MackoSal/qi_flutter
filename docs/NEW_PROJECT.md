@@ -62,7 +62,7 @@ Results may include the script itself, migration history, or documentation refer
 
 Run the quality checks in the [guide](../app/flutter/README.md), then build for your platform. On Android, start with `flutter build apk --debug`; on Linux, `flutter build linux --debug`; on Windows, `flutter build windows --debug`; on macOS, `flutter build macos --debug`. For iOS, use macOS and `flutter build ios --simulator --no-codesign`.
 
-The required native CI builds cover Linux and Android. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 180–209); uncomment the complete marked block to enable it. Windows and macOS builds are local checks and are currently disabled in CI. See the [platform verification matrix](../testing/README.md#platform-matrix-and-local-requirements) before treating a target as CI-verified.
+The required native CI builds cover Linux and Android. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 141–170); uncomment the complete marked block to enable it. Windows and macOS builds are local checks and are currently disabled in CI. See the [platform verification matrix](../testing/README.md#platform-matrix-and-local-requirements) before treating a target as CI-verified.
 
 ## 6. Set product details
 

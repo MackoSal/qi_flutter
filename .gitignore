@@ -42,3 +42,6 @@ tmp_ai_tools/
 # Local AI tool settings
 .claude/
 .cursorrules
+
+# Temporary output of scripts/check_frb_bindings.sh
+scripts/check-frb-bindings-tmp/

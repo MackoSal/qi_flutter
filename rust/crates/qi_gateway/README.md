@@ -145,7 +145,7 @@ The same applies to `Vec<u8>` and `&[u8]`. For large byte buffers returned to Da
 
 ## Unused API functions
 
-`dart run tool/check_frb_api_usage.dart` (in `app/flutter/`, also run by the pre-commit hook and CI as a warning) reports API items from the table above that nothing in `app/flutter/lib/` uses. To keep one on purpose, add a marker with a reason to its Rust doc comment:
+`dart run tool/check_frb_api_usage.dart` (in `app/flutter/`, also run by the pre-commit hook, which blocks the commit unless it runs with `FRB_ALLOW_UNUSED=1`, and by CI as a warning) reports API items from the table above that nothing in `app/flutter/lib/` uses. To keep one on purpose, add a marker with a reason to its Rust doc comment:
 
 ```rust
 /// frb-api-usage: allow-unused (diagnostics screen, issue #12)

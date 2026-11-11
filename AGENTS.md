@@ -8,7 +8,7 @@ This repository is a reusable template for fully native applications built with 
 
 ## 2. Platform Constraints
 
-- **Native project targets:** Linux, Windows, macOS, Android, and iOS. CI-required builds cover Linux and arm64 Android. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 180–209); Windows and macOS also have no CI jobs. Their builds need dedicated host jobs outside the Linux container. Local build guidance remains in `app/flutter/README.md`.
+- **Native project targets:** Linux, Windows, macOS, Android, and iOS. CI-required builds cover Linux and arm64 Android. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 141–170); Windows and macOS also have no CI jobs. Their builds need dedicated host jobs outside the Linux container. Local build guidance remains in `app/flutter/README.md`.
 - **The Web platform is not supported.** Do not add a `web/` target, Web-only packages, or Web-based testing tools.
 - **No WebSocket or local server architecture.** Flutter and Rust communicate only through in-memory FFI.
 
@@ -68,9 +68,18 @@ The FRB version must stay identical in `rust/crates/qi_gateway/Cargo.toml`, `app
 
 For detailed commit-subject guidance, see [`.claude/skills/commit-message/SKILL.md`](.claude/skills/commit-message/SKILL.md).
 
+### Scripts and CI
+
+- CI workflow steps are one-line calls, for example `run: bash scripts/check_frb.sh --allow-warnings`. Anything with conditions, loops, or several commands belongs in a script under `scripts/`, not inline in `.github/workflows/`.
+- Every script works the same locally and in CI: it is non-interactive, reports its result through the exit code, describes itself at the top of the file, and is listed in [`scripts/README.md`](scripts/README.md).
+- A script either changes files on purpose or only checks them. A check never changes repository files.
+- Tests of the scripts themselves (`scripts/tests/`) are run by hand only. Do not add them to CI or the pre-commit hook.
+- AI agents commit with `FRB_ALLOW_UNUSED=1` by default. Whenever the hook then prints the unused FRB API warning, the agent must explicitly ask the user whether keeping those functions unused is a deliberate decision, and fix the commit before pushing if it is not.
+- Keep scripts modular: a check that can run on its own is its own script, and an aggregate script calls it (for example, `check_frb.sh` calls `check_frb_bindings.sh`). The pre-commit hook calls the same scripts as CI.
+
 ### Quality gates
 
-The pre-commit hook (`.githooks/pre-commit`) runs the local Rust and Flutter quality checks that CI also runs. It also blocks stale or unstaged FRB bindings and only warns about unused FRB API functions. CI adds dependency auditing and native target builds. Enable the hook once per clone:
+The pre-commit hook (`.githooks/pre-commit`) runs the local Rust and Flutter quality checks that CI also runs. Through `scripts/check_frb.sh` it also blocks out-of-date FRB bindings and unused FRB API functions; commit unused functions on purpose with `FRB_ALLOW_UNUSED=1 git commit` (CI only warns about them). CI adds dependency auditing and native target builds. Enable the hook once per clone:
 
 ```bash
 git config core.hooksPath .githooks
@@ -88,7 +97,7 @@ git config core.hooksPath .githooks
 | Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk --profile --target-platform android-arm64`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent; CI requires Linux and arm64 Android; iOS CI is commented out) |
 | Integration tests | `patrol test` (`app/flutter/`, requires a device, see `testing/README.md`) |
 
-CI runs Linux jobs in the pinned public GHCR toolchain image, verifies generated FRB bindings, reports unused FRB API functions in a non-blocking job, tests the rename helper against a repository fixture, and requires Linux and arm64 Android builds. Tagged Android releases build all four configured ABIs. The release job only runs for tags. The iOS Simulator job is commented out (see the marked block at lines 180–209 of `.github/workflows/ci-cd.yml`); Windows and macOS app builds are also disabled in CI. Device execution and Patrol tests still require a local device/emulator. Android CI uploads disk-usage diagnostics even if its build fails.
+CI runs Linux jobs in the pinned public GHCR toolchain image, runs `scripts/check_frb.sh` (FRB bindings, analyze, tests; unused FRB API functions only as warning annotations), and requires Linux and arm64 Android builds. Tagged Android releases build all four configured ABIs. The release job only runs for tags. The iOS Simulator job is commented out (see the marked block at lines 141–170 of `.github/workflows/ci-cd.yml`); Windows and macOS app builds are also disabled in CI. Device execution and Patrol tests still require a local device/emulator. Android CI uploads disk-usage diagnostics even if its build fails.
 
 ### Documentation layout
 

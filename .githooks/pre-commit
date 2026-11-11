@@ -57,16 +57,6 @@ if [ -d "rust" ]; then
   fi
 fi
 
-# ── FRB bindings ────────────────────────────────────────
-if [ -f "scripts/check_frb_bindings.sh" ]; then
-  step "bash scripts/check_frb_bindings.sh"
-  if bash scripts/check_frb_bindings.sh 2>&1; then
-    pass "FRB bindings up to date"
-  else
-    fail "FRB bindings stale or not staged — review the regenerated files listed above and git add them"
-  fi
-fi
-
 # ── Dart/Flutter checks ─────────────────────────────────
 if [ -f "app/flutter/pubspec.yaml" ]; then
   step "dart format --set-exit-if-changed lib/ test/"
@@ -75,42 +65,25 @@ if [ -f "app/flutter/pubspec.yaml" ]; then
   else
     fail "Dart formatting — run: cd app/flutter && dart format lib/ test/"
   fi
-
-  step "flutter analyze"
-  if (cd app/flutter && flutter analyze 2>&1 | tail -1 | grep -q "No issues found"); then
-    pass "Flutter analyze"
-  else
-    fail "Flutter analyze — run: cd app/flutter && flutter analyze"
-  fi
-
-  # Warning only, like the non-blocking CI job. Exit code 1 means unused API
-  # functions were found; any other failure means the check itself is broken.
-  step "dart run tool/check_frb_api_usage.dart"
-  frb_usage_status=0
-  (cd app/flutter && dart run tool/check_frb_api_usage.dart 2>&1) || frb_usage_status=$?
-  if [ "$frb_usage_status" -eq 0 ]; then
-    pass "FRB API usage"
-  elif [ "$frb_usage_status" -eq 1 ]; then
-    warn "FRB API usage — unused functions listed above (warning, commit not blocked)"
-  else
-    fail "FRB API usage check crashed — run: cd app/flutter && dart run tool/check_frb_api_usage.dart"
-  fi
-
-  step "flutter test"
-  if (cd app/flutter && flutter test 2>&1); then
-    pass "Flutter tests"
-  else
-    fail "Flutter tests — fix failing tests in app/flutter/"
-  fi
 fi
 
-# ── Template helper checks ────────────────────────────────
-if [ -d "scripts/tests" ]; then
-  step "python3 -m unittest discover -s scripts/tests -v"
-  if python3 -m unittest discover -s scripts/tests -v 2>&1; then
-    pass "Project rename tests"
+# ── Flutter <-> Rust (FRB) checks ───────────────────────
+# Bindings, flutter analyze, flutter test, and unused FRB API functions.
+# Exit code 3 means only unused functions were found. Unlike CI, the hook blocks
+# them, because editors such as VS Code hide the output of a passing hook.
+# FRB_ALLOW_UNUSED=1 confirms that committing them is intentional.
+if [ -f "scripts/check_frb.sh" ]; then
+  step "bash scripts/check_frb.sh"
+  frb_status=0
+  bash scripts/check_frb.sh 2>&1 || frb_status=$?
+  if [ "$frb_status" -eq 0 ]; then
+    pass "FRB checks"
+  elif [ "$frb_status" -eq 3 ] && [ "${FRB_ALLOW_UNUSED:-}" = "1" ]; then
+    warn "WARNING: unused FRB API functions, listed above. Committed on purpose (FRB_ALLOW_UNUSED=1)."
+  elif [ "$frb_status" -eq 3 ]; then
+    fail "Unused FRB API functions, listed above. Use them in app/flutter/lib/, mark them in Rust with '/// frb-api-usage: allow-unused (<reason>)', or commit on purpose: FRB_ALLOW_UNUSED=1 git commit"
   else
-    fail "Project rename tests — fix scripts/tests/"
+    fail "FRB checks — see the ERROR lines above"
   fi
 fi
 
