@@ -37,7 +37,7 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  qi_gateway  
 ### Changing the Rust API exposed to Dart
 
 1. Implement the logic in `qi_core` with unit tests.
-2. Expose it through a function in the matching module of `qi_gateway/src/api/` (for example `api/core.rs` for `qi_core`). Check how its types map to Dart in [`rust/crates/qi_gateway/README.md`](rust/crates/qi_gateway/README.md).
+2. Expose it through a function in the matching module of `qi_gateway/src/api/` (for example `api/core.rs` for `qi_core`). Check how its types map to Dart in [`rust/crates/qi_gateway/README.md`](rust/crates/qi_gateway/README.md). Dart first: [stub the signature](app/flutter/README.md#dart-before-the-rust-logic-exists).
 3. Regenerate the bindings from `app/flutter/`:
 
    ```bash

@@ -17,6 +17,8 @@ The recommended layout is one API module per micro-app crate:
 
 `src/api/mod.rs` only registers the modules and holds `init_app` (`#[frb(init)]`), which belongs to the gateway rather than to a micro-app. Register each module there (`pub mod <name>;`) and regenerate the bindings from `app/flutter/` with `flutter_rust_bridge_codegen generate`. Each Dart file is a separate library, so two modules may use the same function name. A Dart file that imports both then needs an import prefix (`import '...api/core.dart' as core;`).
 
+Dart can start before the logic exists: see [Dart before the Rust logic exists](../../../app/flutter/README.md#dart-before-the-rust-logic-exists).
+
 Keep each function thin:
 
 ```rust

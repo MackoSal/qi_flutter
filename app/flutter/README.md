@@ -136,6 +136,27 @@ flutter_rust_bridge_codegen generate
 
 Do not manually edit `lib/src/rust/frb_generated*.dart` or `rust/crates/qi_gateway/src/frb_generated.rs`. Commit the regenerated files together with the Rust change. The pre-commit hook blocks the commit when they are out of date; run the same check manually with `bash scripts/check_frb_bindings.sh` from the repository root (see [scripts/README.md](../../scripts/README.md)).
 
+### Dart before the Rust logic exists
+
+Bindings are always generated from Rust, so start with the function signature in `rust/crates/qi_gateway/src/api/` and a placeholder body:
+
+```rust
+pub fn measure(_device_id: String) -> f64 {
+    todo!("logic in a micro-app crate")
+}
+```
+
+Generate the bindings and commit them. Dart code can then call `measure(deviceId: ...)` while the Rust logic is written later; the signature and bindings stay the same. Calling it before then panics in Rust, so test the UI with injected data, as `test/widget_test.dart` does.
+
+Use `todo!()` by default. Only when the Dart work needs a real value at run time, return a hard-coded one and print a warning on every call, so the stub cannot go unnoticed:
+
+```rust
+pub fn measure(_device_id: String) -> f64 {
+    eprintln!("WARNING: measure() is a stub returning a fixed value");
+    42.0
+}
+```
+
 ## Common problems
 
 - **`flutter doctor` reports missing tools:** install the requirements for your chosen platform from the table above, then run `flutter doctor -v` again.
