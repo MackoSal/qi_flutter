@@ -57,6 +57,16 @@ if [ -d "rust" ]; then
   fi
 fi
 
+# ── FRB bindings ────────────────────────────────────────
+if [ -f "scripts/check_frb_bindings.sh" ]; then
+  step "bash scripts/check_frb_bindings.sh"
+  if bash scripts/check_frb_bindings.sh 2>&1; then
+    pass "FRB bindings up to date"
+  else
+    fail "FRB bindings stale or not staged — review the regenerated files listed above and git add them"
+  fi
+fi
+
 # ── Dart/Flutter checks ─────────────────────────────────
 if [ -f "app/flutter/pubspec.yaml" ]; then
   step "dart format --set-exit-if-changed lib/ test/"

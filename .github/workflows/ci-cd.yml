@@ -83,11 +83,10 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: "rust"
-      - name: Generate FRB Bindings
-        working-directory: app/flutter
-        run: flutter_rust_bridge_codegen generate
-      - name: Check Generated Bindings
-        run: git -c safe.directory="$GITHUB_WORKSPACE" diff --ignore-all-space --ignore-blank-lines --exit-code -- app/flutter/lib/src/rust/api app/flutter/lib/src/rust/frb_generated.dart app/flutter/lib/src/rust/frb_generated.io.dart app/flutter/lib/src/rust/frb_generated.web.dart rust/crates/qi_gateway/src/frb_generated.rs
+      # Regenerates the bindings and fails on changed, untracked, or stale
+      # generated files. The pre-commit hook runs the same script.
+      - name: Regenerate and Check FRB Bindings
+        run: bash scripts/check_frb_bindings.sh
 
   rename-script-checks:
     runs-on: ubuntu-24.04

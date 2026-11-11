@@ -42,12 +42,12 @@ Flutter renders the UI and calls Rust only through `qi_gateway`. The gateway exp
 | --- | --- | --- | --- |
 | Linux | Yes | Required build | Locally on Linux |
 | Android | Yes | Required build | Android emulator or device |
-| iOS | Yes | CI build is commented out in `.github/workflows/ci-cd.yml` (lines 181–210) | iOS Simulator or device; a device requires macOS and signing |
+| iOS | Yes | CI build is commented out in `.github/workflows/ci-cd.yml` (lines 180–209) | iOS Simulator or device; a device requires macOS and signing |
 | Windows | Yes | CI build disabled | Locally on Windows with Visual Studio C++ tools |
 | macOS | Yes | CI build disabled | Locally on macOS with Xcode |
 | Web | No | Not supported | Not supported |
 
-Windows and macOS targets remain in the Flutter project, but CI does not build them. Restoring those checks requires dedicated Windows/macOS host jobs outside the Linux container. CI requires Linux and arm64 Android native builds. The iOS Simulator job is currently commented out; to re-enable it, uncomment the complete marked block in `.github/workflows/ci-cd.yml` (lines 181–210). CI builds do not replace testing on physical devices.
+Windows and macOS targets remain in the Flutter project, but CI does not build them. Restoring those checks requires dedicated Windows/macOS host jobs outside the Linux container. CI requires Linux and arm64 Android native builds. The iOS Simulator job is currently commented out; to re-enable it, uncomment the complete marked block in `.github/workflows/ci-cd.yml` (lines 180–209). CI builds do not replace testing on physical devices.
 
 The generated `frb_generated.web.dart` file is kept current because FRB emits it; its presence does not mean the application supports Web.
 

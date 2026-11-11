@@ -8,7 +8,7 @@ This repository is a reusable template for fully native applications built with 
 
 ## 2. Platform Constraints
 
-- **Native project targets:** Linux, Windows, macOS, Android, and iOS. CI-required builds cover Linux and arm64 Android. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 181–210); Windows and macOS also have no CI jobs. Their builds need dedicated host jobs outside the Linux container. Local build guidance remains in `app/flutter/README.md`.
+- **Native project targets:** Linux, Windows, macOS, Android, and iOS. CI-required builds cover Linux and arm64 Android. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 180–209); Windows and macOS also have no CI jobs. Their builds need dedicated host jobs outside the Linux container. Local build guidance remains in `app/flutter/README.md`.
 - **The Web platform is not supported.** Do not add a `web/` target, Web-only packages, or Web-based testing tools.
 - **No WebSocket or local server architecture.** Flutter and Rust communicate only through in-memory FFI.
 
@@ -44,7 +44,7 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  qi_gateway  
    flutter_rust_bridge_codegen generate
    ```
 
-4. Commit the regenerated files. Never edit `frb_generated*.dart`, `frb_generated.rs`, or other `@generated` files by hand; CI fails if the committed bindings differ from a fresh generation.
+4. Commit the regenerated files. Never edit `frb_generated*.dart`, `frb_generated.rs`, or other `@generated` files by hand; the pre-commit hook and CI fail if the committed bindings differ from a fresh generation (`bash scripts/check_frb_bindings.sh`).
 5. FRB currently generates a web-specific binding file even though Web is not a supported application target. Keep it in sync with codegen; its presence does not add Web support.
 6. Call every exposed function from application code under `app/flutter/lib/`. The FRB API usage check (`dart run tool/check_frb_api_usage.dart`) warns about functions that are not used. If one must stay unused for now, add `frb-api-usage: allow-unused (<reason>)` to its Rust doc comment.
 
@@ -70,7 +70,7 @@ For detailed commit-subject guidance, see [`.claude/skills/commit-message/SKILL.
 
 ### Quality gates
 
-The pre-commit hook (`.githooks/pre-commit`) runs the local Rust and Flutter quality checks that CI also runs. It only warns about unused FRB API functions. CI adds FRB binding verification, dependency auditing, and native target builds. Enable the hook once per clone:
+The pre-commit hook (`.githooks/pre-commit`) runs the local Rust and Flutter quality checks that CI also runs. It also blocks stale or unstaged FRB bindings and only warns about unused FRB API functions. CI adds dependency auditing and native target builds. Enable the hook once per clone:
 
 ```bash
 git config core.hooksPath .githooks
@@ -88,7 +88,7 @@ git config core.hooksPath .githooks
 | Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk --profile --target-platform android-arm64`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent; CI requires Linux and arm64 Android; iOS CI is commented out) |
 | Integration tests | `patrol test` (`app/flutter/`, requires a device, see `testing/README.md`) |
 
-CI runs Linux jobs in the pinned public GHCR toolchain image, verifies generated FRB bindings, reports unused FRB API functions in a non-blocking job, tests the rename helper against a repository fixture, and requires Linux and arm64 Android builds. Tagged Android releases build all four configured ABIs. The release job only runs for tags. The iOS Simulator job is commented out (see the marked block at lines 181–210 of `.github/workflows/ci-cd.yml`); Windows and macOS app builds are also disabled in CI. Device execution and Patrol tests still require a local device/emulator. Android CI uploads disk-usage diagnostics even if its build fails.
+CI runs Linux jobs in the pinned public GHCR toolchain image, verifies generated FRB bindings, reports unused FRB API functions in a non-blocking job, tests the rename helper against a repository fixture, and requires Linux and arm64 Android builds. Tagged Android releases build all four configured ABIs. The release job only runs for tags. The iOS Simulator job is commented out (see the marked block at lines 180–209 of `.github/workflows/ci-cd.yml`); Windows and macOS app builds are also disabled in CI. Device execution and Patrol tests still require a local device/emulator. Android CI uploads disk-usage diagnostics even if its build fails.
 
 ### Documentation layout
 
