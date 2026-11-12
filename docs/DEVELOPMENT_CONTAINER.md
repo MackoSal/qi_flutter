@@ -17,7 +17,7 @@ Android emulators and physical devices remain host-side tools. To run an app on 
 
 The image definition is `.devcontainer/Dockerfile`; this template publishes it as `ghcr.io/mackosal/qi_flutter-devcontainer`. The Dev Container and Linux CI jobs use the public `:1` tag. The `Dev Container Image` workflow builds and smoke-checks Dockerfile changes on pull requests. After a change lands on `master`, it publishes the versioned `:1` tag and a commit-SHA tag. Keep these tool versions aligned with CI and update the versioned image when a shared toolchain change is intentional.
 
-The image is large because it contains Android SDK/NDK and Rust cross-compilation targets. It standardizes installed tools but does not add disk capacity to GitHub-hosted runners. CI reports Android disk usage to help diagnose build failures.
+The image is large because it contains Android SDK/NDK and Rust cross-compilation targets. It standardizes installed tools but does not add disk capacity to GitHub-hosted runners.
 
 Applications created from this template should keep using the shared public image by default. Update shared tool versions and publish them from the template repository so all projects can use the same maintained toolchain. A project should publish its own GHCR image only when it needs additional or different tools; then change the image path in its Dev Container and Linux CI jobs and maintain that project image separately. Make a project image **Public** if collaborators need anonymous pulls. Teams that need an immutable environment can pin a commit-SHA tag or image digest instead of the mutable `:1` tag.
 

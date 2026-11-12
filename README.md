@@ -41,13 +41,19 @@ Flutter renders the UI and calls Rust only through `qi_gateway`. The gateway exp
 | Platform | Flutter project | CI verification | Run/device testing |
 | --- | --- | --- | --- |
 | Linux | Yes | Required build | Locally on Linux |
-| Android | Yes | Required build | Android emulator or device |
-| iOS | Yes | CI build is commented out in `.github/workflows/ci-cd.yml` (lines 141–170) | iOS Simulator or device; a device requires macOS and signing |
-| Windows | Yes | CI build disabled | Locally on Windows with Visual Studio C++ tools |
-| macOS | Yes | CI build disabled | Locally on macOS with Xcode |
-| Web | No | Not supported | Not supported |
+| Android | Yes | Build on demand | Android emulator or device |
+| iOS | Yes | Simulator build on demand | iOS Simulator or device; a device requires macOS and signing |
+| Windows | Yes | Build on demand | Locally on Windows with Visual Studio C++ tools |
+| macOS | Yes | No CI build | Locally on macOS with Xcode |
+| Web | No | Not **yet** supported | Not supported |
 
-Windows and macOS targets remain in the Flutter project, but CI does not build them. Restoring those checks requires dedicated Windows/macOS host jobs outside the Linux container. CI requires Linux and arm64 Android native builds. The iOS Simulator job is currently commented out; to re-enable it, uncomment the complete marked block in `.github/workflows/ci-cd.yml` (lines 141–170). CI builds do not replace testing on physical devices.
+Every push and pull request must pass the Linux build. Anyone with write access can build Android, iOS, or Windows for any branch on demand: Actions tab → **Manual Platform Build** → **Run workflow**, then pick the branch and platform. The same from a terminal with the GitHub CLI:
+
+```bash
+gh workflow run manual-build.yml --ref <branch> -f platform=android   # or ios, windows
+```
+
+CI builds do not replace testing on physical devices.
 
 The generated `frb_generated.web.dart` file is kept current because FRB emits it; its presence does not mean the application supports Web.
 
@@ -57,7 +63,7 @@ Local quality checks and integration test commands are in the [Flutter guide](ap
 
 Agent rules and architecture are documented in [AGENTS.md](AGENTS.md). The branching and release strategy is in [RELEASES_AND_BRANCHING.md](RELEASES_AND_BRANCHING.md), and the Android Gradle Plugin policy is in [ANDROID_AGP9_MIGRATION.md](app/flutter/ANDROID_AGP9_MIGRATION.md).
 
-For a reproducible Linux/Android toolchain shared by CI and VS Code, see the [development container guide](docs/DEVELOPMENT_CONTAINER.md). Local iOS Simulator builds require macOS and Xcode; the CI job is currently commented out.
+For a reproducible Linux/Android toolchain shared by CI and VS Code, see the [development container guide](docs/DEVELOPMENT_CONTAINER.md). Local iOS Simulator builds require macOS and Xcode.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request and [SECURITY.md](SECURITY.md) to report a vulnerability privately.
 

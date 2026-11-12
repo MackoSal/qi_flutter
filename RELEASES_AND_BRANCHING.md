@@ -17,7 +17,7 @@ We use a simplified **GitHub Flow** model. This is an ideal compromise between s
 
 The management of official releases for clients is automated thanks to GitHub Actions. To create an official installer downloadable from GitHub, you simply need to tag a commit following SemVer and push it to the server.
 
-Release builds run only for tags. Pull requests and regular pushes run the required native Linux and Android checks; they do not repeat the release-mode builds. The Android pull-request check builds a profile APK for `arm64-v8a`; tagged Android releases build all four configured ABIs (`armeabi-v7a`, `arm64-v8a`, `x86`, and `x86_64`).
+Release builds run only for tags. Pull requests and regular pushes run the required Linux build; they do not repeat the release-mode builds. Android, iOS, and Windows can be built on demand (Actions tab → Manual Platform Build). Android is built only for smartphones (`arm64-v8a`), in on-demand builds and tagged releases.
 
 ### Standard Release (Linux and Android)
 By default, pushing a full version tag compiles and uploads packages for both **Android** and **Linux**.

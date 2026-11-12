@@ -58,120 +58,28 @@ jobs:
       - name: FRB Checks
         run: bash scripts/check_frb.sh --allow-warnings
 
-  native-linux-android:
-    name: Build ${{ matrix.target }}
+  # Mandatory platform build. Android, iOS, and Windows are built on demand by
+  # manual-build.yml (Actions tab -> "Manual Platform Build" -> "Run workflow").
+  native-linux:
+    name: Build linux
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/mackosal/qi_flutter-devcontainer:1
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: linux
-          - target: android
     steps:
       - uses: actions/checkout@v4
-
       - name: Install Flutter Dependencies
         working-directory: app/flutter
         run: flutter pub get
-
       - name: Install Cargokit Build Tool Dependencies
         working-directory: app/flutter/rust_builder/cargokit/build_tool
         run: dart pub get
-
       - name: Build Linux
-        if: matrix.target == 'linux'
         working-directory: app/flutter
         run: flutter build linux --debug
 
-      - name: Report Android disk usage before build
-        if: matrix.target == 'android'
-        working-directory: app/flutter
-        run: |
-          report="$GITHUB_WORKSPACE/android-disk-report.txt"
-          {
-            echo '## Disk space before build'
-            df -h
-            echo '## Major toolchain/build directories before build'
-            for path in /opt/android-sdk "$HOME/.gradle/caches" /usr/local/cargo/registry /usr/local/rustup rust_builder/build build; do
-              if [ -e "$path" ]; then du -sh "$path" || true; fi
-            done
-          } 2>&1 | tee "$report"
-
-      - name: Build Android
-        if: matrix.target == 'android'
-        working-directory: app/flutter
-        run: flutter build apk --profile --target-platform android-arm64
-
-      - name: Verify Android APK contains arm64 only
-        if: matrix.target == 'android'
-        working-directory: app/flutter
-        shell: bash
-        run: |
-          set -euo pipefail
-          apk=build/app/outputs/flutter-apk/app-profile.apk
-          test -f "$apk"
-          abis=$(unzip -Z1 "$apk" | sed -n 's#^lib/\([^/]*\)/.*#\1#p' | sort -u)
-          test "$abis" = "arm64-v8a"
-          printf 'Verified APK ABI: %s\n' "$abis"
-
-      - name: Report Android disk usage after build
-        if: always() && matrix.target == 'android'
-        working-directory: app/flutter
-        run: |
-          report="$GITHUB_WORKSPACE/android-disk-report.txt"
-          {
-            echo '## Disk space after build'
-            df -h
-            echo '## Major toolchain/build directories after build'
-            for path in /opt/android-sdk "$HOME/.gradle/caches" /usr/local/cargo/registry /usr/local/rustup rust_builder/build build; do
-              if [ -e "$path" ]; then du -sh "$path" || true; fi
-            done
-          } 2>&1 | tee -a "$report"
-
-      - name: Upload Android disk report
-        if: always() && matrix.target == 'android'
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-disk-report
-          path: ${{ github.workspace }}/android-disk-report.txt
-          if-no-files-found: ignore
-
-  # BEGIN DISABLED iOS Simulator CI build.
-  # To re-enable, uncomment this complete block. Add `native-ios` to the release
-  # job's `needs` only if releases should wait for the iOS Simulator build.
-  # The hosted macOS runner was not acquired in the latest run, so this check
-  # delayed and failed the overall workflow without running any build steps.
-  # native-ios:
-  #   name: Build iOS Simulator (optional)
-  #   runs-on: macos-15
-  #   continue-on-error: true
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Install Flutter
-  #       uses: subosito/flutter-action@v2
-  #       with:
-  #         flutter-version: 3.47.9
-  #         cache: true
-  #     - name: Install Rust
-  #       uses: dtolnay/rust-toolchain@stable
-  #       with:
-  #         toolchain: 1.94.1
-  #     - name: Install Flutter Dependencies
-  #       working-directory: app/flutter
-  #       run: flutter pub get
-  #     - name: Install Cargokit Build Tool Dependencies
-  #       working-directory: app/flutter/rust_builder/cargokit/build_tool
-  #       run: dart pub get
-  #     - name: Build iOS Simulator
-  #       working-directory: app/flutter
-  #       run: flutter build ios --simulator --no-codesign
-  # END DISABLED iOS Simulator CI build.
-
   build-and-release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [rust-checks, flutter-checks, native-linux-android]
+    needs: [rust-checks, flutter-checks, native-linux]
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/mackosal/qi_flutter-devcontainer:1
@@ -222,7 +130,7 @@ jobs:
       - name: Build Android
         if: steps.filter.outputs.should_build == 'true' && matrix.target == 'android'
         working-directory: app/flutter
-        run: flutter build apk --release --target-platform android-arm,android-arm64,android-x64,android-x86
+        run: flutter build apk --release --target-platform android-arm64
         
       - name: Move Android Build
         if: steps.filter.outputs.should_build == 'true' && matrix.target == 'android'

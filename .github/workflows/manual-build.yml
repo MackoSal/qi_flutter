@@ -1,0 +1,86 @@
+name: Manual Platform Build
+
+# Builds one extra platform on demand: Actions tab -> "Manual Platform Build" ->
+# "Run workflow", then pick the branch and the platform. Linux is built on every
+# push and pull request by ci-cd.yml.
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to build
+        type: choice
+        options: [android, ios, windows]
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    name: Build Android (arm64 profile APK)
+    if: inputs.platform == 'android'
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/mackosal/qi_flutter-devcontainer:1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Flutter Dependencies
+        working-directory: app/flutter
+        run: flutter pub get
+      - name: Install Cargokit Build Tool Dependencies
+        working-directory: app/flutter/rust_builder/cargokit/build_tool
+        run: dart pub get
+      - name: Build Android
+        working-directory: app/flutter
+        run: flutter build apk --profile --target-platform android-arm64
+      - name: Verify APK contains arm64 only
+        run: bash scripts/verify_apk_abi.sh app/flutter/build/app/outputs/flutter-apk/app-profile.apk arm64-v8a
+
+  ios:
+    name: Build iOS Simulator
+    if: inputs.platform == 'ios'
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.9
+          cache: true
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.94.1
+      - name: Install Flutter Dependencies
+        working-directory: app/flutter
+        run: flutter pub get
+      - name: Install Cargokit Build Tool Dependencies
+        working-directory: app/flutter/rust_builder/cargokit/build_tool
+        run: dart pub get
+      - name: Build iOS Simulator
+        working-directory: app/flutter
+        run: flutter build ios --simulator --no-codesign
+
+  windows:
+    name: Build Windows
+    if: inputs.platform == 'windows'
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.9
+          cache: true
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.94.1
+      - name: Install Flutter Dependencies
+        working-directory: app/flutter
+        run: flutter pub get
+      - name: Install Cargokit Build Tool Dependencies
+        working-directory: app/flutter/rust_builder/cargokit/build_tool
+        run: dart pub get
+      - name: Build Windows
+        working-directory: app/flutter
+        run: flutter build windows --debug

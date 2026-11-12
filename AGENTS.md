@@ -8,7 +8,7 @@ This repository is a reusable template for fully native applications built with 
 
 ## 2. Platform Constraints
 
-- **Native project targets:** Linux, Windows, macOS, Android, and iOS. CI-required builds cover Linux and arm64 Android. The iOS Simulator job is currently commented out in `.github/workflows/ci-cd.yml` (lines 141–170); Windows and macOS also have no CI jobs. Their builds need dedicated host jobs outside the Linux container. Local build guidance remains in `app/flutter/README.md`.
+- **Native project targets:** Linux, Windows, macOS, Android, and iOS. CI requires only the Linux build. Android, iOS Simulator, and Windows builds run on demand in `.github/workflows/manual-build.yml`; macOS has no CI build. Local build guidance remains in `app/flutter/README.md`.
 - **The Web platform is not supported.** Do not add a `web/` target, Web-only packages, or Web-based testing tools.
 - **No WebSocket or local server architecture.** Flutter and Rust communicate only through in-memory FFI.
 
@@ -94,10 +94,10 @@ git config core.hooksPath .githooks
 | Dart analysis | `flutter analyze` (`app/flutter/`) |
 | Flutter tests | `flutter test` (`app/flutter/`) |
 | Rename script tests | `python3 -m unittest discover -s scripts/tests -v` (repository root) |
-| Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk --profile --target-platform android-arm64`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent; CI requires Linux and arm64 Android; iOS CI is commented out) |
+| Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk --profile --target-platform android-arm64`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent; CI requires Linux; Android, iOS, and Windows are built on demand) |
 | Integration tests | `patrol test` (`app/flutter/`, requires a device, see `testing/README.md`) |
 
-CI runs Linux jobs in the pinned public GHCR toolchain image, runs `scripts/check_frb.sh` (FRB bindings, analyze, tests; unused FRB API functions only as warning annotations), and requires Linux and arm64 Android builds. Tagged Android releases build all four configured ABIs. The release job only runs for tags. The iOS Simulator job is commented out (see the marked block at lines 141–170 of `.github/workflows/ci-cd.yml`); Windows and macOS app builds are also disabled in CI. Device execution and Patrol tests still require a local device/emulator. Android CI uploads disk-usage diagnostics even if its build fails.
+CI runs Linux jobs in the pinned public GHCR toolchain image, runs `scripts/check_frb.sh` (FRB bindings, analyze, tests; unused FRB API functions only as warning annotations), and requires the Linux build. Android (arm64 profile APK), iOS Simulator, and Windows builds run on demand: Actions tab → **Manual Platform Build** → **Run workflow**, then pick the branch and platform. Android is built only for smartphones (`arm64-v8a`), in on-demand builds and tagged releases. The release job only runs for tags. Device execution and Patrol tests still require a local device/emulator.
 
 ### Documentation layout
 

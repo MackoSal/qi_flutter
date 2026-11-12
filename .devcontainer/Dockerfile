@@ -71,7 +71,6 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
     && rustup target add \
       aarch64-linux-android \
       armv7-linux-androideabi \
-      i686-linux-android \
       x86_64-linux-android \
     && cargo install flutter_rust_bridge_codegen --version "$FRB_CODEGEN_VERSION" --locked \
     && cargo install cargo-audit --version "$CARGO_AUDIT_VERSION" --locked \
