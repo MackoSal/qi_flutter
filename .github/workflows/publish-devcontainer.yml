@@ -18,6 +18,10 @@ permissions:
 
 jobs:
   build:
+    # Runs only in the template repository, which publishes the shared image
+    # that projects created from the template use. A project that publishes its
+    # own image replaces this ID with its repository ID (`gh api repos/<owner>/<repo> -q .id`).
+    if: github.repository_id == '1379344872'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
