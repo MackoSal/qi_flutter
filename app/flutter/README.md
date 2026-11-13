@@ -62,11 +62,10 @@ Run the appropriate target:
 flutter run -d linux
 flutter run -d windows
 flutter run -d macos
-flutter run -d android
-flutter run -d ios
+flutter run -d <device-id>   # Android or iOS: an emulator, simulator, or phone
 ```
 
-The command must match a platform and device available on your computer. If multiple devices are connected, use the identifier shown by `flutter devices`.
+Desktop targets use their platform name. For Android and iOS, `-d` needs the identifier or the beginning of the name shown by `flutter devices`, for example `emulator-5554` or `iPhone 16`; `-d android` and `-d ios` do not work.
 
 Build without running:
 
