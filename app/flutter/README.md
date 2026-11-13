@@ -149,7 +149,7 @@ pub fn measure(_device_id: String) -> f64 {
 }
 ```
 
-Generate the bindings and commit them. Dart code can then call `measure(deviceId: ...)` while the Rust logic is written later; the signature and bindings stay the same. Calling it before then panics in Rust, so test the UI with injected data, as `test/widget_test.dart` does.
+Generate the bindings and commit them. Until Dart code calls the new function, the pre-commit hook blocks the commit as an unused FRB API function: add `/// frb-api-usage: allow-unused (<reason>)` to the stub, or commit from a terminal with `FRB_ALLOW_UNUSED=1 git commit` (see [Committing unused FRB API functions](../../README.md#committing-unused-frb-api-functions)). Dart code can then call `measure(deviceId: ...)` while the Rust logic is written later; the signature and bindings stay the same. Calling it before then panics in Rust, so test the UI with injected data, as `test/widget_test.dart` does.
 
 Use `todo!()` by default. Only when the Dart work needs a real value at run time, return a hard-coded one and print a warning on every call, so the stub cannot go unnoticed:
 
