@@ -62,6 +62,12 @@ rg -n 'qi_flutter|com\.example' --glob '!app/flutter/rust_builder/cargokit/**' .
 
 Results may include the script itself, migration history, or documentation references explaining the template. Before considering the rename complete, check the Android/iOS/macOS/Linux/Windows configuration and Dart/Rust imports in particular.
 
+Enable the pre-commit hook in the new clone; it is not copied with the repository:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 Run the quality checks in the [guide](../app/flutter/README.md), then build for your platform. On Android, start with `flutter build apk --debug`; on Linux, `flutter build linux --debug`; on Windows, `flutter build windows --debug`; on macOS, `flutter build macos --debug`. For iOS, use macOS and `flutter build ios --simulator --no-codesign`.
 
 CI requires only the Linux build. Android, iOS Simulator, and Windows builds run on demand (Actions tab → Manual Platform Build → Run workflow); macOS has no CI build. See the [platform verification matrix](../testing/README.md#platform-matrix-and-local-requirements) before treating a target as CI-verified.

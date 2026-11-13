@@ -4,9 +4,13 @@ A ready starting point for desktop and mobile applications. Flutter renders the 
 
 ## Start here
 
-1. [Install the tools and run the application](app/flutter/README.md).
-2. [Explore the repository and learn where to make changes](docs/START_HERE.md).
-3. [Create a project from the template and rename it](docs/NEW_PROJECT.md).
+1. [Create a repository from the template](docs/NEW_PROJECT.md#1-create-a-repository-from-the-template) and clone it.
+2. [Install the tools](app/flutter/README.md#1-install-the-required-tools); the rename in the next step needs them.
+3. [Rename the project](docs/NEW_PROJECT.md#2-choose-names-and-an-identifier) (steps 2–5 of the guide).
+4. [Run the application](app/flutter/README.md#4-run-the-application) and [enable the pre-commit hook](app/flutter/README.md#automatic-pre-commit-checks).
+5. [Explore the repository](docs/START_HERE.md) and add the first feature in a new `qi_<name>` crate ([how](rust/crates/qi_gateway/README.md#adding-a-micro-app-crate)).
+
+To try the template without creating a project, skip steps 1 and 3.
 
 The repository includes a working `greet` demo. Use it as an example of the Flutter → Rust flow, not as product logic.
 
