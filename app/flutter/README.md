@@ -125,9 +125,9 @@ The hook runs formatting, linting, analysis, and Rust/Flutter tests before a com
 ## Where should I change code?
 
 - Screens and widgets: `lib/main.dart` and `lib/`.
-- Rust logic: `../../rust/crates/qi_core/src/`.
+- Rust logic: micro-app crates in `../../rust/crates/` (`qi_core` is the example; new features go into a new `qi_<name>` crate).
 - Public functions exposed to Flutter: `../../rust/crates/qi_gateway/src/api/`.
-- Rust tests: next to the logic in `qi_core` or in the crate's `tests/` directory.
+- Rust tests: next to the logic in each crate or in the crate's `tests/` directory.
 - Flutter tests: `test/`; integration tests: `integration_test/`.
 
 See [START_HERE.md](../../docs/START_HERE.md) for the repository map and call flow. FFI API changes require regenerating bindings from `app/flutter`:

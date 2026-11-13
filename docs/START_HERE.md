@@ -13,7 +13,7 @@ This guide helps you find the right file, even if you are new to Flutter and Rus
 | `app/flutter/android/`, `ios/`, `linux/`, `macos/`, `windows/` | Native Flutter platform configuration and entry points | When configuring a specific operating system |
 | `app/flutter/rust_builder/` | Plugin that builds and links Rust through Cargokit | Usually not needed for product code changes |
 | `app/flutter/rust_builder/cargokit/` | Vendored Cargokit tool | Do not edit manually; treat it as a dependency |
-| `rust/crates/qi_core/src/` | Domain logic, calculations, and state in plain Rust | When implementing product behavior |
+| `rust/crates/qi_core/src/` | Example micro-app crate: domain logic in plain Rust | When changing the `greet` demo; put new features in a new `qi_<name>` crate ([how](../rust/crates/qi_gateway/README.md#adding-a-micro-app-crate)) |
 | `rust/crates/qi_gateway/src/api/` | Thin layer of functions exposed to Flutter | When new logic must be callable from Dart |
 | `rust/crates/qi_gateway/src/frb_generated.rs` | Generated Rust FRB code | Do not edit manually |
 | `scripts/` | Tools for preparing a project from this template | When creating a new product based on this repository |

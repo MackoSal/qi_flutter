@@ -20,7 +20,7 @@ Do not develop product-specific logic in the template repository. A separate rep
 
 ## 3. Preview the changes first
 
-The script changes occurrences of the old application name in tracked project text files, replaces the example `com.example` identifiers with the application ID, sets the company name and copyright on Windows and macOS to the organization part of the ID (for example `com.yourcompany`), moves Android `MainActivity.kt` to the directory matching the new application ID, and renames paths containing the application name. It keeps the technical Rust crate `qi_gateway` unchanged. It skips vendored Cargokit, build directories, its own regression tests under `scripts/tests/`, and this guide, and it keeps the rename command elsewhere unchanged so the docs still describe the template.
+The script changes occurrences of the old application name in tracked project text files, replaces the example `com.example` identifiers with the application ID, sets the company name and copyright on Windows and macOS to the organization part of the ID (for example `com.yourcompany`), moves Android `MainActivity.kt` to the directory matching the new application ID, and renames paths containing the application name. It keeps the Rust crates `qi_gateway` and `qi_core` unchanged; the `qi_` crate prefix is the same in every project created from the template. It skips vendored Cargokit, build directories, its own regression tests under `scripts/tests/`, and this guide, and it keeps the rename command elsewhere unchanged so the docs still describe the template.
 
 Start with a preview:
 
@@ -75,5 +75,5 @@ CI requires only the Linux build. Android, iOS Simulator, and Windows builds run
 - Keep `ghcr.io/mackosal/qi_flutter-devcontainer:1` as the default image in `.devcontainer/devcontainer.json` and Linux jobs in `.github/workflows/ci-cd.yml`. The rename script preserves this shared template image. It is public so new projects can pull it without credentials.
 - For shared toolchain and package updates, update the image definition in the template repository and publish a new version there. Projects using the `:1` tag receive those updates when they pull the image. If this product needs extra or different tools, build and publish a project-specific image to its own GHCR package, then point the Dev Container and Linux jobs to it; make that package public if collaborators need anonymous pulls.
 - Replace the `@MackoSal` entry in `.github/CODEOWNERS` with the GitHub account or team that will own the new repository.
-- Replace the quickstart screen and `greet` with the first product feature. Start with logic and tests in `qi_core`, then expose it through the FRB API.
+- Replace the quickstart screen and `greet` with the first product feature. Start with logic and tests in a new `qi_<name>` crate (see [Adding a micro-app crate](../rust/crates/qi_gateway/README.md#adding-a-micro-app-crate)), then expose it through the FRB API.
 - Update the product README and the “Creating a New Project” section in its `AGENTS.md` to describe the product.

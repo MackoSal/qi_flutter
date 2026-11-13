@@ -26,7 +26,8 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  qi_gateway  
   - Composition root: depends on the micro-app crates and selects their driver crates (per platform with `cfg(target_os)` or per product variant with Cargo features). See [`rust/crates/qi_gateway/README.md`](rust/crates/qi_gateway/README.md), which also documents the Rust ↔ Dart type mapping.
   - Converts between FFI-friendly types and `qi_core` types. It must not contain business logic.
   - “Gateway” means the Flutter-to-Rust FFI boundary here; it is not a hardware or device driver.
-- **Core layer - `rust/crates/qi_core/`:**
+- **Micro-app crates - `rust/crates/qi_<name>/` and shared `owncrate_<name>` crates:**
+  - `qi_core` is only an example. Each new feature goes into a new crate: `qi_<name>` in `rust/crates/` when only this application uses it, or `owncrate_<name>` in its own git repository when it is shared with other applications. The `qi_` prefix stays the same in every project created from this template. See [Adding a micro-app crate](rust/crates/qi_gateway/README.md#adding-a-micro-app-crate).
   - Pure Rust domain rules, state, and calculations. Keep operating-system, hardware, and external I/O behind explicit adapters so core behavior remains easy to test.
   - Has **no dependency on Flutter or FRB** and must be testable with plain `cargo test`.
 - **Native build glue - `app/flutter/rust_builder/`:**
@@ -36,7 +37,7 @@ Flutter UI (app/flutter)  ──FFI (flutter_rust_bridge)──►  qi_gateway  
 
 ### Changing the Rust API exposed to Dart
 
-1. Implement the logic in `qi_core` with unit tests.
+1. Implement the logic with unit tests in a micro-app crate: a new `qi_<name>` crate, or `owncrate_<name>` when it is shared (see the architecture section).
 2. Expose it through a function in the matching module of `qi_gateway/src/api/` (for example `api/core.rs` for `qi_core`). Check how its types map to Dart in [`rust/crates/qi_gateway/README.md`](rust/crates/qi_gateway/README.md). Dart first: [stub the signature](app/flutter/README.md#dart-before-the-rust-logic-exists).
 3. Regenerate the bindings from `app/flutter/`:
 

@@ -12,7 +12,7 @@ The recommended layout is one API module per micro-app crate:
 
 | Rust module | Micro-app crate | Generated Dart file |
 | --- | --- | --- |
-| `src/api/core.rs` | `qi_core` (empty example) | `lib/src/rust/api/core.dart` |
+| `src/api/core.rs` | `qi_core` (example) | `lib/src/rust/api/core.dart` |
 | `src/api/<name>.rs` | your micro-app crate | `lib/src/rust/api/<name>.dart` |
 
 `src/api/mod.rs` only registers the modules and holds `init_app` (`#[frb(init)]`), which belongs to the gateway rather than to a micro-app. Register each module there (`pub mod <name>;`) and regenerate the bindings from `app/flutter/` with `flutter_rust_bridge_codegen generate`. Each Dart file is a separate library, so two modules may use the same function name. A Dart file that imports both then needs an import prefix (`import '...api/core.dart' as core;`).
@@ -29,6 +29,21 @@ pub fn greet(name: String) -> String {
 ```
 
 Functions are asynchronous by default: Dart receives a `Future<T>`, and the work runs off the UI isolate. `#[frb(sync)]` returns `T` directly but blocks the Flutter UI isolate while Rust runs, so use it only for short calls.
+
+## Adding a micro-app crate
+
+`qi_core` is only an example crate. Put each new feature in a new crate:
+
+| Crate | Name | Location |
+| --- | --- | --- |
+| Used only by this application | `qi_<name>`, for example `qi_measurement` | `rust/crates/qi_<name>/` in this repository |
+| Shared with other applications | `owncrate_<name>`, for example `owncrate_serial` | its own git repository |
+
+The `qi_` prefix stays the same in every project created from this template, like `qi_core` and `qi_gateway`.
+
+1. Create the crate. For an application crate, run `cargo new --lib crates/qi_<name>` in `rust/` and add `"crates/qi_<name>"` to `members` in `rust/Cargo.toml`. A shared crate lives in its own repository instead.
+2. Add it to `[dependencies]` in `qi_gateway/Cargo.toml`: `qi_<name> = { path = "../qi_<name>" }`, or for a shared crate `owncrate_<name> = { git = "<repository URL>", tag = "<version>" }`.
+3. Expose it through a new module `src/api/<name>.rs` as described above, and regenerate the bindings.
 
 ## Choosing drivers
 

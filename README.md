@@ -34,7 +34,7 @@ flowchart LR
 
 Flutter renders the UI and calls Rust only through `qi_gateway`. The gateway exposes the API of the micro-app crates to Dart and contains no business logic. Micro-apps hold the logic and reach hardware only through a trait, so the driver (UART, BLE, USB) can be swapped. The gateway selects the driver crates per platform (`cfg(target_os)`) or per product variant (Cargo features). Micro-app and driver crates can live in `rust/crates/` or be external Cargo dependencies.
 
-`qi_core` is an empty example micro-app. Dashed elements show the intended structure and are not part of the template yet. The gateway's role, API module layout, driver selection, and Rust ↔ Dart type mapping are described in [`rust/crates/qi_gateway/README.md`](rust/crates/qi_gateway/README.md).
+`qi_core` is only an example micro-app crate. New features go into new crates: `qi_<name>` in `rust/crates/` when only this application uses them, `owncrate_<name>` in a separate git repository when they are shared; see [Adding a micro-app crate](rust/crates/qi_gateway/README.md#adding-a-micro-app-crate). Dashed elements show the intended structure and are not part of the template yet. The gateway's role, API module layout, driver selection, and Rust ↔ Dart type mapping are described in [`rust/crates/qi_gateway/README.md`](rust/crates/qi_gateway/README.md).
 
 ## Platforms
 
