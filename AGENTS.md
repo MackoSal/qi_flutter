@@ -98,11 +98,11 @@ git config core.hooksPath .githooks
 | Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk --profile --target-platform android-arm64`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent; CI requires Linux; Android, iOS, and Windows are built on demand) |
 | Integration tests | `patrol test` (`app/flutter/`, requires a device, see `testing/README.md`) |
 
-CI runs Linux jobs in the pinned public GHCR toolchain image, runs `scripts/check_frb.sh` (FRB bindings, analyze, tests; unused FRB API functions only as warning annotations), and requires the Linux build. Android (arm64 profile APK), iOS Simulator, and Windows builds run on demand: Actions tab → **Manual Platform Build** → **Run workflow**, then pick the branch and platform. Android is built only for smartphones (`arm64-v8a`), in on-demand builds and tagged releases. The release job only runs for tags. Device execution and Patrol tests still require a local device/emulator.
+CI runs Linux jobs in the shared public GHCR toolchain image (`:1` tag, updated from the template repository), runs `scripts/check_frb.sh` (FRB bindings, analyze, tests; unused FRB API functions only as warning annotations), and requires the Linux build. Android (arm64 profile APK), iOS Simulator, and Windows builds run on demand: Actions tab → **Manual Platform Build** → **Run workflow**, then pick the branch and platform. Android is built only for smartphones (`arm64-v8a`), in on-demand builds and tagged releases. The release job only runs for tags. Device execution and Patrol tests still require a local device/emulator.
 
 ### Documentation layout
 
-- `README.md` - setup and running the app.
+- `README.md` - overview, the start path from template to first feature, architecture, and platforms.
 - `app/flutter/README.md` - beginner setup, commands, platform prerequisites, and troubleshooting.
 - `docs/START_HERE.md` - repository path map and Flutter-to-Rust example workflow.
 - `docs/NEW_PROJECT.md` - creating a product repository and renaming identifiers.
@@ -110,6 +110,8 @@ CI runs Linux jobs in the pinned public GHCR toolchain image, runs `scripts/chec
 - `app/flutter/ANDROID_AGP9_MIGRATION.md` - Android Gradle Plugin version policy.
 - `testing/README.md` - local checks, CI target builds, and device testing.
 - `docs/DEVELOPMENT_CONTAINER.md` - shared GHCR toolchain image and Dev Container setup.
+- `rust/crates/qi_gateway/README.md` - gateway role, micro-app crates, driver selection, and Rust ↔ Dart type mapping.
+- `scripts/README.md` - helper and check scripts.
 - `CONTRIBUTING.md` and `SECURITY.md` - contribution and vulnerability reporting guidance.
 - `design/` - design-system workspace (no design has been created yet).
 - `AI_TOOLS_HELPERS.md` - AI roles and skills under `.gemini/`.

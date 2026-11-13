@@ -1,6 +1,6 @@
 # Gemini Project Instructions
 
-Read and follow [AGENTS.md](AGENTS.md) before working in this repository. It is the source of truth for the architecture, migration goals, and platform constraints.
+Read and follow [AGENTS.md](AGENTS.md) before working in this repository. It is the source of truth for the architecture, platform constraints, working rules, and quality checks.
 
 Task-specific workflows are available under `.gemini/skills/` and `.gemini/rules/`. Use a workflow only when it is relevant to the user's request. Treat tool names and commands in those files as optional: use them only when they are available in the active Gemini environment.
 

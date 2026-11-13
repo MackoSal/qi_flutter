@@ -16,7 +16,7 @@ This guide helps you find the right file, even if you are new to Flutter and Rus
 | `rust/crates/qi_core/src/` | Example micro-app crate: domain logic in plain Rust | When changing the `greet` demo; put new features in a new `qi_<name>` crate ([how](../rust/crates/qi_gateway/README.md#adding-a-micro-app-crate)) |
 | `rust/crates/qi_gateway/src/api/` | Thin layer of functions exposed to Flutter | When new logic must be callable from Dart |
 | `rust/crates/qi_gateway/src/frb_generated.rs` | Generated Rust FRB code | Do not edit manually |
-| `scripts/` | Tools for preparing a project from this template | When creating a new product based on this repository |
+| `scripts/` | Project rename helper and the check scripts used by the pre-commit hook and CI ([list](../scripts/README.md)) | When creating a project from the template or changing checks |
 | `testing/`, `.github/workflows/` | Test instructions and automated checks/builds | When changing project verification |
 | `design/` | Place for design tokens, assets, and design-system documentation | When the project starts work on a shared visual system |
 
