@@ -22,6 +22,12 @@ Do not develop product-specific logic in the template repository. A separate rep
 
 The script changes occurrences of the old application name in tracked project text files, replaces the example `com.example` identifiers with the application ID, sets the company name and copyright on Windows and macOS to the organization part of the ID (for example `com.yourcompany`), moves Android `MainActivity.kt` to the directory matching the new application ID, and renames paths containing the application name. It keeps the Rust crates `qi_gateway` and `qi_core` unchanged; the `qi_` crate prefix is the same in every project created from the template. It skips vendored Cargokit, build directories, its own regression tests under `scripts/tests/`, and this guide, and it keeps the rename command elsewhere unchanged so the docs still describe the template.
 
+Optionally, first check that the rename script itself works. Its tests are not a routine check: run them after changing the script or before creating a new application, while the copy still has the template names:
+
+```bash
+python3 -m unittest discover -s scripts/tests -v
+```
+
 Start with a preview:
 
 ```bash

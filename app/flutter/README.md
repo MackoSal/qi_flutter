@@ -95,15 +95,10 @@ Run the Flutter checks from the repository root. `scripts/check_frb.sh` already 
 bash scripts/check_frb.sh
 ```
 
-From the repository root, also run the template rename helper checks:
+Integration tests require an available target. Run them from `app/flutter`:
 
 ```bash
-python3 -m unittest discover -s scripts/tests -v
-```
-
-Integration tests require an available target:
-
-```bash
+cd app/flutter
 flutter test integration_test/simple_test.dart -d linux
 patrol test -t integration_test/example_test.dart
 ```

@@ -11,7 +11,7 @@ Helper scripts, run from the repository root. Some also run in the pre-commit ho
 | `build_devcontainer_image.sh` | Builds the Dev Container image and checks its tools. Used by `publish-devcontainer.yml`. |
 | `publish_devcontainer_image.sh` | Pushes that image to GHCR. Used by `publish-devcontainer.yml`. |
 | `rename_project.py` | Renames the template for a new project, see [docs/NEW_PROJECT.md](../docs/NEW_PROJECT.md). |
-| `tests/` | Tests for `rename_project.py`. Not automated; run by hand: `python3 -m unittest discover -s scripts/tests -v`. |
+| `tests/` | Tests for `rename_project.py`. Not a routine check: run them by hand after changing the script or before creating a new application, to confirm the script still works: `python3 -m unittest discover -s scripts/tests -v`. |
 
 Directories that may appear here are ignored by git and safe to delete:
 
