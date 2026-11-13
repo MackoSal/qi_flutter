@@ -57,7 +57,7 @@ cd ../..
 Check that old names and example identifiers are not left in project files:
 
 ```bash
-rg -n 'qi_flutter|com\.example' --glob '!app/flutter/rust_builder/cargokit/**' .
+git grep -nE 'qi_flutter|com\.example' -- ':(exclude)app/flutter/rust_builder/cargokit'
 ```
 
 Results may include the script itself, migration history, or documentation references explaining the template. Before considering the rename complete, check the Android/iOS/macOS/Linux/Windows configuration and Dart/Rust imports in particular.
