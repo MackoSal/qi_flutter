@@ -12,8 +12,8 @@ from pathlib import Path
 SOURCE_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = SOURCE_ROOT / "scripts/rename_project.py"
 OLD_NAME = "qi_flutter"
-NEW_NAME = "qi_wellness"
-NEW_ID = "pl.example.qiwellness"
+NEW_NAME = "my_app"
+NEW_ID = "pl.example.myapp"
 
 
 class RenameProjectTests(unittest.TestCase):
@@ -118,7 +118,7 @@ class RenameProjectTests(unittest.TestCase):
         self.assertTrue(
             (
                 self.root
-                / "app/flutter/android/app/src/main/kotlin/pl/example/qiwellness/MainActivity.kt"
+                / "app/flutter/android/app/src/main/kotlin/pl/example/myapp/MainActivity.kt"
             ).is_file()
         )
 
@@ -165,8 +165,8 @@ class RenameProjectTests(unittest.TestCase):
 
     def test_rejects_invalid_names_and_application_id(self) -> None:
         cases = [
-            ("QiWellness", NEW_ID),
-            (NEW_NAME, "pl..qiwellness"),
+            ("MyApp", NEW_ID),
+            (NEW_NAME, "pl..myapp"),
         ]
         for new_name, app_id in cases:
             with self.subTest(new_name=new_name, app_id=app_id):
@@ -177,7 +177,7 @@ class RenameProjectTests(unittest.TestCase):
         self.assertEqual(invalid_old_name.returncode, 2)
 
     def test_refuses_path_conflict_before_modifying_files(self) -> None:
-        conflict = self.root / "app/flutter/android/app/src/main/kotlin/pl/example/qiwellness"
+        conflict = self.root / "app/flutter/android/app/src/main/kotlin/pl/example/myapp"
         conflict.mkdir(parents=True)
         before = (self.root / "app/flutter/pubspec.yaml").read_bytes()
         result = self._run(OLD_NAME, NEW_NAME, "--application-id", NEW_ID)

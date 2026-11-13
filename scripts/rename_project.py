@@ -41,11 +41,11 @@ def main() -> int:
         description="Rename the template's project/package names and native app ID."
     )
     parser.add_argument("old_name", help="Current project name, usually qi_flutter")
-    parser.add_argument("new_name", help="New Dart application package name, e.g. qi_wellness")
+    parser.add_argument("new_name", help="New Dart application package name, e.g. my_app")
     parser.add_argument(
         "--application-id",
         required=True,
-        help="Unique reverse-DNS ID, e.g. pl.example.qiwellness",
+        help="Unique reverse-DNS ID, e.g. pl.example.myapp",
     )
     parser.add_argument(
         "--dry-run", action="store_true", help="Show planned edits without writing files"
@@ -55,7 +55,7 @@ def main() -> int:
     if not re.fullmatch(r"[a-z][a-z0-9_]*", args.old_name):
         parser.error("old_name must be a lowercase Dart/Rust name, e.g. qi_flutter")
     if not re.fullmatch(r"[a-z][a-z0-9_]*", args.new_name):
-        parser.error("new_name must be a lowercase Dart package name, e.g. qi_wellness")
+        parser.error("new_name must be a lowercase Dart package name, e.g. my_app")
     if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+", args.application_id):
         parser.error("--application-id must be a reverse-DNS ID, e.g. pl.example.app")
     if args.old_name == args.new_name:

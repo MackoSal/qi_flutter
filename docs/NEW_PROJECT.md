@@ -15,8 +15,8 @@ Do not develop product-specific logic in the template repository. A separate rep
 
 ## 2. Choose names and an identifier
 
-- `new_name` is used as the Dart application package name. The Rust FFI gateway crate remains named `qi_gateway` in product repositories so its technical role does not depend on the product name. Use lowercase letters, digits, and underscores, for example `qi_wellness`.
-- `application-id` is a unique native platform identifier in reverse-DNS notation, for example `com.yourcompany.qiwellness`. Choose a domain you control. Do not use `com.example` in a published product.
+- `new_name` is used as the Dart application package name. The Rust FFI gateway crate remains named `qi_gateway` in product repositories so its technical role does not depend on the product name. Use lowercase letters, digits, and underscores, for example `my_app`.
+- `application-id` is a unique native platform identifier in reverse-DNS notation, for example `com.yourcompany.myapp`. Choose a domain you control. Do not use `com.example` in a published product.
 
 ## 3. Preview the changes first
 
@@ -25,15 +25,15 @@ The script changes occurrences of the old application name in tracked project te
 Start with a preview:
 
 ```bash
-python3 scripts/rename_project.py qi_flutter qi_wellness \
-  --application-id com.yourcompany.qiwellness --dry-run
+python3 scripts/rename_project.py qi_flutter my_app \
+  --application-id com.yourcompany.myapp --dry-run
 ```
 
 If the proposed changes look right, run it without `--dry-run`:
 
 ```bash
-python3 scripts/rename_project.py qi_flutter qi_wellness \
-  --application-id com.yourcompany.qiwellness
+python3 scripts/rename_project.py qi_flutter my_app \
+  --application-id com.yourcompany.myapp
 ```
 
 The script updates text names and the Android package path automatically. It does not choose publisher information, icons, certificates, or signing configuration; those are product-owner decisions. Review the diff before committing.

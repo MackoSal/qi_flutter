@@ -57,7 +57,7 @@ The FRB version must stay identical in `rust/crates/qi_gateway/Cargo.toml`, `app
 
 ### Git identity
 
-- For commits in this repository, use `Maciej Salwa <macieks1515@wp.pl>`, matching the repository owner's existing commit history. Never use `maciej.salwa.ext@qorix.ai` for this repository.
+- When a new repository is created from this template, ask the user which git account (name and e-mail) to use for its commits, and set it with `git config --local user.name` and `git config --local user.email`. Do not assume an identity.
 - Before creating or amending a commit, verify the repository-local identity with `git config --local user.name` and `git config --local user.email`.
 
 ### Commit and push policy
