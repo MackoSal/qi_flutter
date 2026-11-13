@@ -41,7 +41,10 @@ From the repository root:
 ```bash
 cd app/flutter
 flutter pub get
+(cd rust_builder/cargokit/build_tool && dart pub get)
 ```
+
+The second command fetches the dependencies of the Cargokit build tool. Without it, `flutter analyze` reports errors in `rust_builder/cargokit/`, and the pre-commit hook blocks every commit.
 
 On the first build, Cargokit may download and compile Rust tools for the target. This can take a few minutes.
 

@@ -44,6 +44,7 @@ The script updates text names and the Android package path automatically. It doe
 cd app/flutter
 flutter clean
 flutter pub get
+(cd rust_builder/cargokit/build_tool && dart pub get)
 flutter_rust_bridge_codegen generate
 cd ../..
 ```
