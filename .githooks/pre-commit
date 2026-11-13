@@ -3,7 +3,6 @@
 # Runs the same checks as CI: formatting, linting, static analysis.
 #
 # Install: git config core.hooksPath .githooks
-# Or:      make hooks
 #
 # Skip (emergency only): git commit --no-verify
 
