@@ -4,7 +4,7 @@ This guide assumes that you have already cloned the repository. Run Flutter comm
 
 ## 1. Install the required tools
 
-Install the Flutter SDK (which includes Dart), Rust using rustup, and Git. You also need `flutter_rust_bridge_codegen` at the version used by this project (`2.13.0`):
+Install the Flutter SDK (which includes Dart), Rust using rustup, and Git. The project needs Dart 3.13 or newer (`sdk: ^3.13.0` in `pubspec.yaml`), which ships with Flutter 3.47 or newer; older SDKs cannot compile the app. You also need `flutter_rust_bridge_codegen` at the version used by this project (`2.13.0`):
 
 ```bash
 cargo install flutter_rust_bridge_codegen --version 2.13.0
@@ -88,13 +88,11 @@ cargo clippy --all-targets --all-features -- -D warnings
 cargo test --workspace
 ```
 
-Run Flutter checks from `app/flutter`:
+Run the Flutter checks from the repository root. `scripts/check_frb.sh` already contains `flutter analyze` and `flutter test`, plus the FRB binding and unused API checks, so running the script is the simplest way:
 
 ```bash
-cd ../app/flutter
-dart format --set-exit-if-changed lib/ test/
-flutter analyze
-flutter test
+(cd app/flutter && dart format --set-exit-if-changed lib/ test/)
+bash scripts/check_frb.sh
 ```
 
 From the repository root, also run the template rename helper checks:
