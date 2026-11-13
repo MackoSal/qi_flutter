@@ -46,10 +46,11 @@ flutter clean
 flutter pub get
 (cd rust_builder/cargokit/build_tool && dart pub get)
 flutter_rust_bridge_codegen generate
+dart fix --apply --code=directives_ordering
 cd ../..
 ```
 
-Review the diff after code generation. Do not edit `frb_generated*` files manually; commit generated changes if code generation updates the bindings.
+`dart fix` re-sorts the `import` lines: a new package name that sorts before `flutter` (for example `acme_demo`) otherwise makes `flutter analyze` and the pre-commit hook fail. Review the diff after code generation. Do not edit `frb_generated*` files manually; commit generated changes if code generation updates the bindings.
 
 ## 5. Verify names and run checks
 

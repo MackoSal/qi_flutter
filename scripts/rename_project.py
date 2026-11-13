@@ -164,7 +164,7 @@ def main() -> int:
         except OSError:
             break
 
-    print("Rename complete. Next: flutter clean, flutter pub get, then regenerate FRB bindings.")
+    print("Rename complete. Next: follow step 4 of docs/NEW_PROJECT.md.")
     return 0
 
 
