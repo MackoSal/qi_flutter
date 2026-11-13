@@ -14,6 +14,7 @@ SCRIPT = SOURCE_ROOT / "scripts/rename_project.py"
 OLD_NAME = "qi_flutter"
 NEW_NAME = "my_app"
 NEW_ID = "pl.example.myapp"
+NEW_ORGANIZATION = "pl.example"
 
 
 class RenameProjectTests(unittest.TestCase):
@@ -143,6 +144,25 @@ class RenameProjectTests(unittest.TestCase):
             contents = path.read_text(encoding="utf-8")
             self.assertIn(NEW_NAME, contents, path)
 
+        runner_rc = (self.root / "app/flutter/windows/runner/Runner.rc").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(f'VALUE "CompanyName", "{NEW_ORGANIZATION}"', runner_rc)
+        app_info = (
+            self.root / "app/flutter/macos/Runner/Configs/AppInfo.xcconfig"
+        ).read_text(encoding="utf-8")
+        self.assertIn(f"Copyright © 2026 {NEW_ORGANIZATION}.", app_info)
+
+        # The template guide and the rename command keep describing the template.
+        guide = Path("docs/NEW_PROJECT.md")
+        self.assertEqual(
+            (self.root / guide).read_bytes(), (SOURCE_ROOT / guide).read_bytes()
+        )
+        self.assertIn(
+            f"rename_project.py {OLD_NAME} <new_name>",
+            (self.root / "AGENTS.md").read_text(encoding="utf-8"),
+        )
+
         leftovers = []
         for path in self._text_files():
             if path == self.root / "scripts/rename_project.py" or {
@@ -150,7 +170,7 @@ class RenameProjectTests(unittest.TestCase):
                 "tests",
             }.issubset(path.parts):
                 continue
-            if "cargokit" in path.parts:
+            if "cargokit" in path.parts or path == self.root / "docs/NEW_PROJECT.md":
                 continue
             try:
                 contents = path.read_text(encoding="utf-8")
@@ -158,7 +178,7 @@ class RenameProjectTests(unittest.TestCase):
                 continue
             contents = contents.replace(
                 "ghcr.io/mackosal/qi_flutter-devcontainer", ""
-            )
+            ).replace(f"rename_project.py {OLD_NAME}", "")
             if OLD_NAME in contents or "com.example" in contents:
                 leftovers.append(path.relative_to(self.root).as_posix())
         self.assertEqual(leftovers, [])

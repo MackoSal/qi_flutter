@@ -14,6 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SKIP_PARTS = {".git", ".dart_tool", "build", "target", "Outputs"}
 VENDORED_PARTS = {"cargokit"}
 SHARED_TOOLCHAIN_IMAGE = "ghcr.io/mackosal/qi_flutter-devcontainer"
+# The guide for creating a project from the template must keep describing the
+# template, so the script never edits it.
+UNCHANGED_FILES = {Path("docs/NEW_PROJECT.md")}
 
 
 def project_files() -> list[Path]:
@@ -61,6 +64,8 @@ def main() -> int:
     if args.old_name == args.new_name:
         parser.error("old_name and new_name must be different")
 
+    organization = args.application_id.rsplit(".", 1)[0]
+
     try:
         paths = project_files()
     except (FileNotFoundError, subprocess.CalledProcessError) as error:
@@ -71,7 +76,7 @@ def main() -> int:
     moves: list[tuple[Path, Path]] = []
     moved_directories: set[Path] = set()
     for relative in paths:
-        if relative == Path("scripts/rename_project.py"):
+        if relative == Path("scripts/rename_project.py") or relative in UNCHANGED_FILES:
             continue
         source = ROOT / relative
         try:
@@ -80,15 +85,26 @@ def main() -> int:
         except (UnicodeDecodeError, OSError):
             continue
 
+        # Kept as is: the shared toolchain image and the rename command itself.
+        protected = {
+            "__SHARED_TEMPLATE_TOOLCHAIN_IMAGE__": SHARED_TOOLCHAIN_IMAGE,
+            "__TEMPLATE_RENAME_COMMAND__": f"rename_project.py {args.old_name}",
+        }
         app_id_token = "__TEMPLATE_APPLICATION_ID__"
-        image_token = "__SHARED_TEMPLATE_TOOLCHAIN_IMAGE__"
-        updated = text.replace(SHARED_TOOLCHAIN_IMAGE, image_token)
+        organization_token = "__TEMPLATE_ORGANIZATION__"
+        updated = text
+        for token, value in protected.items():
+            updated = updated.replace(value, token)
         updated = updated.replace("com.example.qi_flutter", app_id_token)
         updated = updated.replace("com.example.qiFlutter", app_id_token)
-        updated = updated.replace("com.example", app_id_token)
+        # A bare com.example is Flutter's organization (company name and
+        # copyright); like `flutter create --org`, use the ID without its last part.
+        updated = updated.replace("com.example", organization_token)
         updated = updated.replace(args.old_name, args.new_name)
         updated = updated.replace(app_id_token, args.application_id)
-        updated = updated.replace(image_token, SHARED_TOOLCHAIN_IMAGE)
+        updated = updated.replace(organization_token, organization)
+        for token, value in protected.items():
+            updated = updated.replace(token, value)
         encoded = updated.encode("utf-8")
         if encoded != original:
             edits.append((relative, encoded))
