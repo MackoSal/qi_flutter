@@ -91,10 +91,13 @@ This table lists the repository's Markdown files and explains who they are for. 
 | [`AGENTS.md`](AGENTS.md) | Both | Source of truth for architecture, platform limits, development rules, and quality checks; agents should read it before changing code. |
 | [`CLAUDE.md`](CLAUDE.md) | AI (Claude Code) | Tells Claude Code to follow `AGENTS.md` and explains how to treat the repository's AI workflow references. |
 | [`GEMINI.md`](GEMINI.md) | AI (Gemini) | Gemini-specific project instructions and links to task workflows. |
+| [`.github/copilot-instructions.md`](.github/copilot-instructions.md) | AI (GitHub Copilot) | Tells GitHub Copilot to follow `AGENTS.md`. |
+| [`.claude/skills/commit-message/SKILL.md`](.claude/skills/commit-message/SKILL.md) | AI (Claude Code) | Guidance for writing Conventional Commit subjects in this repository. |
 | [`AI_TOOLS_HELPERS.md`](AI_TOOLS_HELPERS.md) | Both | Explains the AI roles and skills stored under `.gemini/` and how to use them. |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Human | Contribution expectations, review guidance, and checks to run before opening a pull request. |
 | [`SECURITY.md`](SECURITY.md) | Both | Describes how to report vulnerabilities privately and the template's supported maintenance scope. |
 | [`RELEASES_AND_BRANCHING.md`](RELEASES_AND_BRANCHING.md) | Both | Branching conventions and the tag-driven release process. |
+| [`TEMPLATE_TODO.md`](TEMPLATE_TODO.md) | Both | Possible future improvements of the template; not commitments. |
 | [`app/flutter/README.md`](app/flutter/README.md) | Human | Beginner setup guide for prerequisites, running the Flutter app, platform builds, and troubleshooting. |
 | [`app/flutter/ANDROID_AGP9_MIGRATION.md`](app/flutter/ANDROID_AGP9_MIGRATION.md) | Both | Records the Android Gradle Plugin and Kotlin version policy and guidance for a future AGP 9 migration. |
 | [`app/flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md`](app/flutter/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md) | Human | Brief instructions for replacing the iOS launch-screen images. |
