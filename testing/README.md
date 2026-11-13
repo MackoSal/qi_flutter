@@ -19,8 +19,9 @@ bash scripts/check_frb.sh
 
 `scripts/check_frb.sh` checks that the committed FRB bindings match the Rust
 API, runs `flutter analyze` and `flutter test`, and reports unused FRB API
-functions. Only the last one is a warning; the others block. The pre-commit hook
-and the `flutter-checks` CI job run the same script. Each step is described at
+functions. The pre-commit hook and the `flutter-checks` CI job run the same
+script. All steps block, except unused FRB API functions, which block in the hook
+but only warn in CI. Each step is described at
 the top of the script.
 
 The FRB API usage check reports endpoints that Rust exposes to Dart and that
