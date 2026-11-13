@@ -7,6 +7,9 @@ Helper scripts, run from the repository root. Some also run in the pre-commit ho
 | `check_frb.sh` | Runs all Flutter ↔ Rust checks: `check_frb_bindings.sh`, `flutter analyze`, `flutter test`, and the unused FRB API check. Runs in the pre-commit hook and the `flutter-checks` CI job; unused FRB API functions block in the hook and only warn in CI. |
 | `check_frb_bindings.sh` | Checks that the committed FRB bindings match the Rust API. Only checks. Called by `check_frb.sh`. |
 | `verify_apk_abi.sh` | Checks that an APK contains exactly the expected Android ABIs. Only checks. Used by the Android job of `manual-build.yml`. |
+| `release_should_build.sh` | Decides from the tag suffix (`-a`, `-l`) whether a release builds Android or Linux. Only checks. Used by the release job in `ci-cd.yml`. |
+| `build_devcontainer_image.sh` | Builds the Dev Container image and checks its tools. Used by `publish-devcontainer.yml`. |
+| `publish_devcontainer_image.sh` | Pushes that image to GHCR. Used by `publish-devcontainer.yml`. |
 | `rename_project.py` | Renames the template for a new project, see [docs/NEW_PROJECT.md](../docs/NEW_PROJECT.md). |
 | `tests/` | Tests for `rename_project.py`. Not automated; run by hand: `python3 -m unittest discover -s scripts/tests -v`. |
 

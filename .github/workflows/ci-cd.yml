@@ -93,21 +93,8 @@ jobs:
       
       - name: Check Selective Release (Tag Suffix)
         id: filter
-        run: |
-          BUILD_TARGET="${{ matrix.target }}"
-          SHOULD_BUILD="true"
-          
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            TAG_NAME="${GITHUB_REF#refs/tags/}"
-            if [[ "$TAG_NAME" == *-a ]] && [[ "$BUILD_TARGET" != "android" ]]; then
-              SHOULD_BUILD="false"
-            elif [[ "$TAG_NAME" == *-l ]] && [[ "$BUILD_TARGET" != "linux" ]]; then
-              SHOULD_BUILD="false"
-            fi
-          fi
-          
-          echo "should_build=$SHOULD_BUILD" >> $GITHUB_OUTPUT
-      
+        run: echo "should_build=$(bash scripts/release_should_build.sh '${{ matrix.target }}' "$GITHUB_REF_NAME")" >> "$GITHUB_OUTPUT"
+
       - name: Install Flutter Dependencies
         if: steps.filter.outputs.should_build == 'true'
         working-directory: app/flutter
