@@ -40,7 +40,8 @@ rust/target/
 tmp_ai_tools/
 
 # Local AI tool settings
-.claude/
+.claude/*
+!.claude/skills/
 .cursorrules
 
 # Temporary output of scripts/check_frb_bindings.sh
