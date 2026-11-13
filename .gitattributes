@@ -2,3 +2,8 @@
 # pull request diffs and leaves them out of the language statistics.
 app/flutter/lib/src/rust/** linguist-generated=true
 rust/crates/qi_gateway/src/frb_generated.rs linguist-generated=true
+
+# Shell scripts and git hooks must keep LF line endings, also on Windows,
+# or bash cannot run them.
+*.sh text eol=lf
+.githooks/* text eol=lf
