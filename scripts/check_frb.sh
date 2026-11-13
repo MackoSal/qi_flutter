@@ -45,10 +45,10 @@ case "$usage_status" in
 esac
 
 echo
-for problem in "${errors[@]}"; do
+for problem in ${errors[@]+"${errors[@]}"}; do
   echo "ERROR: $problem" >&2
 done
-for problem in "${warnings[@]}"; do
+for problem in ${warnings[@]+"${warnings[@]}"}; do
   echo "WARNING: $problem" >&2
 done
 
