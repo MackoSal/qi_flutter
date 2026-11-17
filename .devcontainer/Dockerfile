@@ -1,5 +1,5 @@
 # Keep tool versions in sync with the Dev Container documentation.
-FROM ubuntu:24.04
+FROM ubuntu:25.10
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG FLUTTER_VERSION=3.47.9
