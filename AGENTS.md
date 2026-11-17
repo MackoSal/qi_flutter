@@ -99,7 +99,7 @@ git config core.hooksPath .githooks
 | Dart formatting | `dart format --set-exit-if-changed lib/ test/` (`app/flutter/`) |
 | Dart analysis | `flutter analyze` (`app/flutter/`) |
 | Flutter tests | `flutter test` (`app/flutter/`) |
-| Rename script tests | `python3 -m unittest discover -s scripts/tests -v` (repository root) |
+| Rename script tests | `python3 -m unittest discover -s scripts/tests -v` (repository root). Not a routine check: run only after changing `scripts/rename_project.py` or before creating a new application. |
 | Native builds | `flutter build linux --debug`, `windows`, `macos`, `apk --profile --target-platform android-arm64`, or `ios --simulator --no-codesign` (`app/flutter/`, target-dependent; CI requires Linux; Android, iOS, and Windows are built on demand) |
 | Integration tests | `patrol test` (`app/flutter/`, requires a device, see `testing/README.md`) |
 

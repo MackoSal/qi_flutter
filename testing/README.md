@@ -58,7 +58,7 @@ These tests use temporary Git repositories and do not rename the current checkou
 
 ## What CI checks for each target
 
-Rust, Flutter, and FRB binding checks are required. The rename-helper tests are not automated; run them by hand after changing `scripts/rename_project.py`. Only the Linux build is required. Android, iOS Simulator, and Windows builds run on demand: Actions tab → **Manual Platform Build** → **Run workflow**, then pick the branch and platform. The Android build makes an arm64 profile APK and verifies its ABI contents with `scripts/verify_apk_abi.sh`. Android is built only for smartphones (`arm64-v8a`), in on-demand builds and tagged releases. macOS has no CI build.
+Rust, Flutter, and FRB binding checks are required. The rename-helper tests are not automated and not a routine check; run them by hand after changing `scripts/rename_project.py` or before creating a new application. Only the Linux build is required. Android, iOS Simulator, and Windows builds run on demand: Actions tab → **Manual Platform Build** → **Run workflow**, then pick the branch and platform. The Android build makes an arm64 profile APK and verifies its ABI contents with `scripts/verify_apk_abi.sh`. Android is built only for smartphones (`arm64-v8a`), in on-demand builds and tagged releases. macOS has no CI build.
 
 All Linux CI jobs and the VS Code Dev Container use the public GHCR toolchain image. See [Development container](../docs/DEVELOPMENT_CONTAINER.md) for the pinned versions and setup. The iOS and Windows builds run on GitHub-hosted macOS and Windows runners, which use more paid minutes than Linux in private repositories.
 
