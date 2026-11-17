@@ -86,6 +86,7 @@ cd rust
 cargo fmt --all -- --check
 cargo clippy --all-targets --all-features -- -D warnings
 cargo test --workspace
+cd ..
 ```
 
 Run the Flutter checks from the repository root. `scripts/check_frb.sh` already contains `flutter analyze` and `flutter test`, plus the FRB binding and unused API checks, so running the script is the simplest way:
