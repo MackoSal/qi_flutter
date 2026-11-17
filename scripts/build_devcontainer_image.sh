@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds the Dev Container toolchain image from .devcontainer/Dockerfile as
-# `devcontainer:test` and checks that the expected tools are inside it.
+# `qi_devcontainer:test` and checks that the expected tools are inside it.
 # Changes no repository files; it only creates a local Docker image.
 #
 # Usage: bash scripts/build_devcontainer_image.sh
@@ -14,8 +14,8 @@ set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
 
-docker build --file .devcontainer/Dockerfile --tag devcontainer:test .
-docker run --rm devcontainer:test bash -lc '
+docker build --file .devcontainer/Dockerfile --tag qi_devcontainer:test .
+docker run --rm qi_devcontainer:test bash -lc '
   flutter --version --machine >/tmp/flutter-version.json &&
   rustc --version &&
   flutter_rust_bridge_codegen --version &&

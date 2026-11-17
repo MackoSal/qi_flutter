@@ -19,6 +19,6 @@ repository="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
 image="ghcr.io/${repository}-devcontainer"
 
 for tag in 1 "$2"; do
-  docker tag devcontainer:test "$image:$tag"
+  docker tag qi_devcontainer:test "$image:$tag"
   docker push "$image:$tag"
 done
