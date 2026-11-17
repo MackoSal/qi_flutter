@@ -23,12 +23,13 @@ Applications created from this template should keep using the shared public imag
 
 ### Publishing project-specific images
 
-A project created from the template already contains `.devcontainer/Dockerfile` and the `Dev Container Image` workflow. The workflow runs only in the template repository (it checks the repository ID), so a project does not publish an image by default. Also remove the `docker` entry from the project's `.github/dependabot.yml`, because the shared image is updated in the template repository.
+A project created from the template already contains `.devcontainer/Dockerfile` and the `Dev Container Image` workflow. In every repository, the workflow builds and checks the image when a pull request changes the Dockerfile or the image scripts. Only the template repository publishes it (the workflow checks the repository ID), so a project does not publish an image by default. Also remove the `docker` entry from the project's `.github/dependabot.yml`, because the shared image is updated in the template repository.
 
 If a project needs its own toolchain:
 
-1. Replace the repository ID in the `if:` line of `.github/workflows/publish-devcontainer.yml` with the project's ID (`gh api repos/<owner>/<repo> -q .id`).
+1. Replace the repository ID in the `PUBLISH` line of `.github/workflows/publish-devcontainer.yml` with the project's ID (`gh api repos/<owner>/<repo> -q .id`).
 2. Point `image` in `.devcontainer/devcontainer.json` and the `container.image` settings in `.github/workflows/ci-cd.yml` and `.github/workflows/manual-build.yml` to `ghcr.io/<owner>/<repo>-devcontainer:1`.
-3. Run **Actions → Dev Container Image → Run workflow** on the default branch, and set the GHCR package to **Public** if collaborators need anonymous pulls.
+3. Add the `docker` entry back to `.github/dependabot.yml` so the base image gets updates.
+4. Run **Actions → Dev Container Image → Run workflow** on the default branch, and set the GHCR package to **Public** if collaborators need anonymous pulls.
 
 If the shared template image is made private later, projects can pull it only after logging in: add `credentials` with a token that can read packages to each `container:` block, and give the project repositories read access in the package settings (**Manage Actions access**).
