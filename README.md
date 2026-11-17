@@ -10,7 +10,7 @@ A ready starting point for desktop and mobile applications. Flutter renders the 
 4. [Run the application](app/flutter/README.md#4-run-the-application) and [enable the pre-commit hook](app/flutter/README.md#automatic-pre-commit-checks).
 5. [Explore the repository](docs/START_HERE.md) and add the first feature in a new `qi_<name>` crate ([how](rust/crates/qi_gateway/README.md#adding-a-micro-app-crate)).
 
-To try the template without creating a project, skip steps 1 and 3.
+To try the template without creating a project, clone this repository, then follow steps 2, 4, and 5.
 
 The repository includes a working `greet` demo. Use it as an example of the Flutter → Rust flow, not as product logic.
 
