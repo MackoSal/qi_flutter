@@ -61,6 +61,11 @@ The FRB version must stay identical in `rust/crates/qi_gateway/Cargo.toml`, `app
 - When a new repository is created from this template, ask the user which git account (name and e-mail) to use for its commits, and set it with `git config --local user.name` and `git config --local user.email`. Do not assume an identity.
 - Before creating or amending a commit, verify the repository-local identity with `git config --local user.name` and `git config --local user.email`.
 
+### Generic fixes belong in the template
+
+- In a repository created from this template, a fix or improvement that is not specific to the product (for example CI, scripts, hooks, build setup, or generic documentation) should also reach the original template, so other projects get it too.
+- When an agent makes such a change, it must ask the user whether to open a pull request or an issue in the template repository.
+
 ### Commit and push policy
 
 - Use a short, single-line Conventional Commit subject: `type(scope): imperative summary`. The scope is optional when the type makes the change clear; for example, `docs: clarify setup` or `fix(rename): validate identifiers`.
